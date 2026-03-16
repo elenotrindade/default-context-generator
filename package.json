@@ -60,7 +60,7 @@
         },
         "defaultContextGenerator.autoGenerate": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "%config.autoGenerate.description%"
         },
         "defaultContextGenerator.autoGenerateOnlyWhenMissing": {

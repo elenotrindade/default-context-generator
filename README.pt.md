@@ -63,23 +63,24 @@ Ver [Instalação do Cursor CLI](https://cursor.com/docs/cli/installation).
 
 ### Instalar e usar no seu Cursor
 
-**Opção A — Instalar pela loja (recomendado)**
+O **Cursor** não usa a busca do VS Code Marketplace (ele usa o Open VSX). Por isso o jeito mais simples é instalar pelo **.vsix**:
 
-1. No Cursor: **Extensões** (Ctrl+Shift+X).
-2. Busque por **Default Context Generator**.
-3. Clique em **Instalar**. A extensão está publicada no [Open VSX](https://open-vsx.org) (e opcionalmente no VS Code Marketplace).
-4. Reinicie o Cursor se pedir. O botão **"Gerar contexto"** na status bar (canto inferior direito) e o comando **"Default Context Generator: Gerar contexto do projeto"** ficam disponíveis em qualquer workspace.
+**Opção A — Instalar pelo .vsix (recomendado no Cursor)**
 
-**Opção B — Instalar pelo .vsix** (ex.: build a partir do código ou instalação offline)
+1. Baixe a extensão: **[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=elenotrindade.default-context-generator)** → à direita, em **Resources**, clique em **Download Extension** (salva um `.vsix`).  
+   Ou use um [release no GitHub](https://github.com/elenotrindade/default-context-generator/releases) se houver.
+2. No Cursor: **Extensões** (Ctrl+Shift+X) → **"..."** (no topo do painel) → **Install from VSIX...** → escolha o `.vsix` baixado.
+3. Reinicie o Cursor se pedir. O botão **"Gerar contexto"** na status bar (canto inferior direito) e o comando **Default Context Generator: Gerar contexto do projeto** ficam disponíveis.
 
-1. Obtenha um arquivo `.vsix` (por um [release](https://github.com/elenotrindade/default-context-generator/releases) ou build: `npm install && npm run package` neste repo).
-2. No Cursor: **Extensões** (Ctrl+Shift+X) → **"..."** → **Install from VSIX...** → selecione o `.vsix`.
+**Opção B — VS Code**
+
+No VS Code você pode buscar **Default Context Generator** em Extensões (Ctrl+Shift+X) e instalar pela marketplace.
 
 **Opção C — Desenvolvimento (F5)**
 
 - **F5** (Run > Start Debugging) abre uma janela de desenvolvimento com a extensão carregada, para testar sem instalar.
 
-**Publicação** (para mantenedores): ver [PUBLISHING.md](PUBLISHING.md).
+**Publicação** (para mantenedores): ver [PUBLISHING.md](PUBLISHING.md). Para a extensão aparecer na busca do Cursor, é preciso publicar no [Open VSX](https://open-vsx.org) (conta Eclipse Foundation necessária).
 
 ---
 

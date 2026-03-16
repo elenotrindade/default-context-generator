@@ -63,23 +63,24 @@ See [Cursor CLI installation](https://cursor.com/docs/cli/installation).
 
 ### Install and use in your Cursor
 
-**Option A — Install from the marketplace (recommended)**
+**Cursor** does not list the VS Code Marketplace in its extension search (it uses Open VSX). So the easiest way is to install via **.vsix**:
 
-1. In Cursor: **Extensions** (Ctrl+Shift+X).
-2. Search for **Default Context Generator**.
-3. Click **Install**. The extension is published on [Open VSX](https://open-vsx.org) (and optionally the VS Code Marketplace).
-4. Restart Cursor if prompted. The **"Generate context"** status bar button (bottom right) and the command **"Default Context Generator: Generate project context"** will be available in any workspace.
+**Option A — Install via .vsix (recommended for Cursor)**
 
-**Option B — Install from .vsix** (e.g. you built from source or prefer offline install)
+1. Download the extension: **[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=elenotrindade.default-context-generator)** → on the right, under **Resources**, click **Download Extension** (saves a `.vsix` file).  
+   Or get a build from a [GitHub release](https://github.com/elenotrindade/default-context-generator/releases) if available.
+2. In Cursor: **Extensions** (Ctrl+Shift+X) → **"..."** (top of the panel) → **Install from VSIX...** → choose the downloaded `.vsix`.
+3. Restart Cursor if prompted. The **"Generate context"** status bar button (bottom right) and the command **Default Context Generator: Generate project context** will be available.
 
-1. Get a `.vsix` file (from a [release](https://github.com/elenotrindade/default-context-generator/releases) or build: `npm install && npm run package` in this repo).
-2. In Cursor: **Extensions** (Ctrl+Shift+X) → **"..."** → **Install from VSIX...** → select the `.vsix`.
+**Option B — VS Code**
+
+In VS Code you can search for **Default Context Generator** in Extensions (Ctrl+Shift+X) and install from the marketplace.
 
 **Option C — Development (F5)**
 
 - **F5** (Run > Start Debugging) opens a development window with the extension loaded, to test without installing.
 
-**Publishing** (for maintainers): see [PUBLISHING.md](PUBLISHING.md).
+**Publishing** (for maintainers): see [PUBLISHING.md](PUBLISHING.md). To have the extension appear in Cursor’s built-in search, it must be published on [Open VSX](https://open-vsx.org) (Eclipse Foundation account required).
 
 ---
 

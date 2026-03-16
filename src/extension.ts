@@ -470,7 +470,7 @@ function runGerarContexto(promptOverride?: string) {
 /** Run context generation automatically when workspace has no context, to avoid unnecessary manual runs and client usage. */
 async function tryAutoRun(extensionContext: vscode.ExtensionContext): Promise<void> {
   const config = vscode.workspace.getConfiguration();
-  const autoGenerate = config.get<boolean>(CONFIG_AUTO, true);
+  const autoGenerate = config.get<boolean>(CONFIG_AUTO, false);
   if (!autoGenerate) return;
 
   const folder = vscode.workspace.workspaceFolders?.[0];
