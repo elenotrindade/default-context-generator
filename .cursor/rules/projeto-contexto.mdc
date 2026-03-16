@@ -1,0 +1,32 @@
+---
+description: Reference to project context and skill allocation by task type
+alwaysApply: true
+---
+
+# Project context and skills
+
+This repository is the **Default Context Generator**. Use the context documentation and the skills below to keep things consistent.
+
+## Where the context is
+
+- **Overview and index:** [docs/context/README.md](../../docs/context/README.md)
+- **By area:** [extension.md](../../docs/context/extension.md), [skills-e-rules.md](../../docs/context/skills-e-rules.md), [docs-tecnico.md](../../docs/context/docs-tecnico.md), [doc-existing-repos.md](../../docs/context/doc-existing-repos.md) (interpreting existing doc in target repos)
+
+## Skill allocation (in this repo)
+
+| When working on | Use as guide |
+|-----------------|--------------|
+| `src/extension.ts`, commands, clipboard, VS Code API | No specific domain skill; see [VS Code Extension API](https://code.visualstudio.com/api). TypeScript. |
+| `.cursor/skills/`, `.cursor/rules/`, generator content | **docs-tecnico** (structure, Cursor format); **default-context-generator** for the workflow. |
+| `PROJECT_IDEA.md`, `README.md`, `docs/` | **docs-tecnico**; keep in sync with code and .cursor/. |
+| Request to "generate context" or "get context" | Rule **gerar-contexto** + skill **default-context-generator** (see .cursor/rules/gerar-contexto.mdc). |
+
+## Keep documentation up to date
+
+When you change code, architecture, or conventions that affect what is described in `docs/context/` (or in README/`PROJECT_IDEA.md`), **update the corresponding document in the same workflow**. That avoids drift between code and context and keeps the context in sync with the current state.
+
+## Technology references
+
+- [VS Code Extension API](https://code.visualstudio.com/api)
+- [TypeScript](https://www.typescriptlang.org/docs/)
+- Cursor: Rules and Skills docs (when available)

@@ -1,0 +1,17 @@
+---
+description: Extension TypeScript code (src/); reference to VS Code API and i18n
+globs: src/**/*.ts
+alwaysApply: false
+---
+
+# Extension — TypeScript
+
+When editing `src/` (Cursor/VS Code extension):
+
+- Use **VS Code Extension API**: commands, `vscode.env.clipboard`, `vscode.commands.executeCommand`.
+- Entry point: `activate()` in `extension.ts`; the main command is `defaultContextGenerator.gerarContexto`.
+- Keep the default prompt (`PROMPT_DEFAULT` in `extension.ts`) aligned with the workflow in `.cursor/skills/default-context-generator/SKILL.md`.
+- **i18n:** UI strings live in `src/nls.ts` (en/pt); manifest strings in `package.nls.json` and `package.nls.pt.json`. Follow the rule in `.cursor/rules/i18n.mdc`.
+- Documentation: [docs/context/extension.md](../../docs/context/extension.md).
+
+Reference: [VS Code Extension API](https://code.visualstudio.com/api).

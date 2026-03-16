@@ -1,0 +1,30 @@
+---
+description: Internationalization — primary language English, secondary Portuguese
+alwaysApply: true
+---
+
+# Internationalization (i18n)
+
+This project is **internationalized**: **primary language is English**, **secondary is Portuguese**.
+
+## Rules
+
+- **User-facing content** (extension UI, commands, messages, docs for users): provide **English first**, then **Portuguese** where applicable.
+- **Code and docs** (README, CONTRIBUTING, rules, skills, `docs/context/`): **English as primary**. Portuguese versions or sections can be added for accessibility.
+- **Extension**: strings are in `package.nls.json` (en) and `package.nls.pt.json` (pt); runtime messages in `src/nls.ts` (en/pt). The UI follows the Cursor/VS Code display language.
+- **When adding or editing** rules, skills, or documentation: write in **English** by default; add or update **Portuguese** translations when you touch that content (or note "PT: pending" if deferred).
+- **Default agent prompt** (generated context workflow): kept in **English** so the agent behavior is consistent across locales.
+
+## Where translations live
+
+| What | English | Portuguese |
+|------|---------|------------|
+| Extension manifest (commands, config) | `package.nls.json` | `package.nls.pt.json` |
+| Extension UI (messages, popup, status bar) | `src/nls.ts` → `messages.en` | `src/nls.ts` → `messages.pt` |
+| Rules (`.cursor/rules/*.mdc`) | Primary content in each file | Add `## PT` section or separate file if needed |
+| Skills (`.cursor/skills/*/SKILL.md`) | Primary content | PT sections or `SKILL.pt.md` (to be expanded) |
+| README, CONTRIBUTING | `README.md`, `CONTRIBUTING.md` | `README.pt.md` (Portuguese) |
+
+## Contributing translations
+
+When contributing: prefer adding or completing **Portuguese** translations for existing English content. Keep keys and structure in sync between en/pt in `nls.ts` and the `package.nls*.json` files.

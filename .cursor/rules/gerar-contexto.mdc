@@ -1,0 +1,14 @@
+---
+description: When asked to generate project context, use the default-context-generator skill
+alwaysApply: true
+---
+
+# Generate project context
+
+The context generator is intended for **auto** use: the extension runs it automatically when a workspace has no context, to avoid unnecessary client usage. When the user asks to **generate context**, **get context**, **set up rules/skills**, or **prepare the project for Cursor** in this repository:
+
+1. **Use the skill** `default-context-generator` (in `.cursor/skills/default-context-generator/SKILL.md`).
+2. Follow the workflow described there: **interpret existing documentation** (when present) and index it by area of expertise → analyze repo → generate docs in `docs/context/` (reusing existing doc) → generate rules in `.cursor/rules/` (with skill allocation and references to the project and technologies) → optionally skills and best practices.
+3. Use the **domain skills** listed in default-context-generator (arquiteto-software, system-design, backend, frontend, ux-ui, devops, seguranca, marketing, testing, data-database, docs-tecnico, acessibilidade, performance) as a guide when mapping and documenting each area of the project.
+
+Project reference: `PROJECT_IDEA.md` and `README.md` at the repo root.
