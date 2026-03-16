@@ -63,31 +63,23 @@ See [Cursor CLI installation](https://cursor.com/docs/cli/installation).
 
 ### Install and use in your Cursor
 
-**Option A — Install from .vsix (recommended for personal use)**
+**Option A — Install from the marketplace (recommended)**
 
-1. In the project folder:
-   ```bash
-   npm install
-   npm run package
-   ```
-   This produces a `default-context-generator-0.1.0.vsix` file in the root.
+1. In Cursor: **Extensions** (Ctrl+Shift+X).
+2. Search for **Default Context Generator**.
+3. Click **Install**. The extension is published on [Open VSX](https://open-vsx.org) (and optionally the VS Code Marketplace).
+4. Restart Cursor if prompted. The **"Generate context"** status bar button (bottom right) and the command **"Default Context Generator: Generate project context"** will be available in any workspace.
 
-2. In Cursor: **Extensions** (Ctrl+Shift+X) → **"..."** menu → **Install from VSIX...** → select the generated `.vsix`.
+**Option B — Install from .vsix** (e.g. you built from source or prefer offline install)
 
-3. Restart Cursor if prompted. The **"Default Context Generator: Generate project context"** command and the **"Generate context"** status bar button will be available in any workspace.
-
-**Option B — Publish to a marketplace (install via extension search)**
-
-See **[PUBLISHING.md](PUBLISHING.md)** for the full step-by-step. In short:
-
-- **Open VSX** (works with Cursor): account at [open-vsx.org](https://open-vsx.org), token, then `npx @vscode/vsce login open-vsx` and `npx @vscode/vsce publish -p <token>`.
-- **VS Code Marketplace**: create a publisher at [marketplace.visualstudio.com](https://marketplace.visualstudio.com/manage), then `npx @vscode/vsce login <publisher>` and `npx @vscode/vsce publish`.
-
-Before publishing, set `publisher` and `repository.url` in `package.json` if needed.
+1. Get a `.vsix` file (from a [release](https://github.com/elenotrindade/default-context-generator/releases) or build: `npm install && npm run package` in this repo).
+2. In Cursor: **Extensions** (Ctrl+Shift+X) → **"..."** → **Install from VSIX...** → select the `.vsix`.
 
 **Option C — Development (F5)**
 
-- **F5** (Run > Start Debugging) opens a development window with the extension loaded, to test without installing the .vsix.
+- **F5** (Run > Start Debugging) opens a development window with the extension loaded, to test without installing.
+
+**Publishing** (for maintainers): see [PUBLISHING.md](PUBLISHING.md).
 
 ---
 
