@@ -3,7 +3,7 @@
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
   "version": "0.1.0",
-  "publisher": "defaultcontextgenerator",
+  "publisher": "elenotrindade",
   "repository": {
     "type": "git",
     "url": "https://github.com/elenotrindade/default-context-generator"
