@@ -83,7 +83,7 @@
         },
         "defaultContextGenerator.model": {
           "type": "string",
-          "default": "",
+          "default": "auto",
           "description": "%config.model.description%"
         }
       }

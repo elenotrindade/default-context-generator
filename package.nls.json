@@ -16,5 +16,5 @@
   "config.repoLanguage.pt": "Portuguese",
   "config.repoLanguage.mixed": "Mixed (large legacy codebases)",
   "config.repoLanguage.ask": "Ask every time",
-  "config.model.description": "Agent model for context generation (e.g. claude-4-6-sonnet). Empty = Cursor default. Used for auto-run and as default in the model selector."
+  "config.model.description": "Agent model for context generation. Default: auto (Cursor picks). Examples: auto, claude-4-6-sonnet. Used for auto-run and as default in the model selector."
 }

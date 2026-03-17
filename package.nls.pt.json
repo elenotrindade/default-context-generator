@@ -16,5 +16,5 @@
   "config.repoLanguage.pt": "Português",
   "config.repoLanguage.mixed": "Misto (bases de código legadas grandes)",
   "config.repoLanguage.ask": "Perguntar sempre",
-  "config.model.description": "Modelo do agente para geração de contexto (ex.: claude-4-6-sonnet). Vazio = padrão do Cursor. Usado no auto-run e como padrão no seletor de modelo."
+  "config.model.description": "Modelo do agente para geração de contexto. Padrão: auto (Cursor escolhe). Ex.: auto, claude-4-6-sonnet. Usado no auto-run e como padrão no seletor de modelo."
 }

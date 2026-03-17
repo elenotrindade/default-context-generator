@@ -263,10 +263,10 @@ const MODEL_DEFAULT_SENTINEL = "__default__";
 /** Model options for the selector. Value = slug for agent --model, or MODEL_DEFAULT_SENTINEL for Cursor default. */
 const MODEL_OPTIONS: { label: string; value: string }[] = [
   { label: localize("model.default"), value: MODEL_DEFAULT_SENTINEL },
+  { label: localize("model.auto"), value: "auto" },
   { label: localize("model.opus"), value: "claude-4-6-opus" },
   { label: localize("model.sonnet46"), value: "claude-4-6-sonnet" },
   { label: localize("model.sonnet45"), value: "claude-4-5-sonnet" },
-  { label: localize("model.haiku"), value: "claude-4-haiku" },
 ];
 const CONFIG_REPO_LANGUAGE = "defaultContextGenerator.repoLanguage";
 type RepoLanguage = "en" | "pt" | "mixed";
