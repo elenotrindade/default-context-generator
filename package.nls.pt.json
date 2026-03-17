@@ -6,6 +6,7 @@
   "command.apontarOuCriarConfig": "Default Context Generator: Definir ou criar arquivo de configuração",
   "command.abrirNoChat": "Default Context Generator: Abrir no chat (copiar prompt e abrir chat)",
   "command.agentLogin": "Default Context Generator: Fazer login no Cursor CLI",
+  "command.resetDefaultPrompt": "Default Context Generator: Restaurar arquivo de prompt padrão",
   "config.title": "Default Context Generator",
   "config.configPath.description": "Caminho do arquivo de configuração (prompt). Vazio = usa o prompt padrão do bot. Pode ser .txt (texto = prompt) ou .json com campo \"prompt\".",
   "config.autoGenerate.description": "Se ativado, executa a geração de contexto automaticamente ao abrir um workspace sem contexto. Desligado por padrão; ative nas configurações se quiser esse comportamento.",

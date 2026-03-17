@@ -22,7 +22,7 @@ This repository is the **Default Context Generator**: automation to generate **c
 
 - **Runtime:** Node (via VS Code/Cursor).
 - **Main language:** TypeScript (extension only).
-- **Documentation:** PROJECT_IDEA.md (vision and requirements), README.md (usage and extension).
+- **Documentation:** README.md (usage and extension); PROJECT_IDEA.md (vision and requirements, when present).
 
 ## Project areas
 
@@ -30,7 +30,7 @@ This repository is the **Default Context Generator**: automation to generate **c
 |------|-------------|----------|
 | Extension | VS Code/Cursor command, clipboard, opening chat | [extension.md](extension.md) |
 | Skills and rules | Generator content (orchestration + domain), format, usage | [skills-e-rules.md](skills-e-rules.md) |
-| Technical documentation | PROJECT_IDEA, README, project doc conventions | [docs-tecnico.md](docs-tecnico.md) |
+| Technical documentation | README, PROJECT_IDEA (if present), project doc conventions | [docs-tecnico.md](docs-tecnico.md) |
 | Existing doc in repos | Interpreting and indexing existing documentation by area | [doc-existing-repos.md](doc-existing-repos.md) |
 | i18n | Primary language EN, secondary PT; rule and extension strings | `.cursor/rules/i18n.mdc`, `package.nls*.json`, `src/nls.ts` |
 
@@ -47,8 +47,8 @@ defaultcontextgenerator/
 │   └── skills/           # default-context-generator + 13 domain skills
 ├── docs/
 │   └── context/          # This context (README + docs by area)
-├── PROJECT_IDEA.md       # Vision, flow, future extension
-└── README.md             # Usage, extension, how to test
+├── README.md             # Usage, extension, how to test
+└── PROJECT_IDEA.md      # Vision, flow, future extension (when present)
 ```
 
 ## Technology references

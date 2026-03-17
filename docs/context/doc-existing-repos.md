@@ -90,4 +90,4 @@ By the end of workflow step 0:
 ## 6. Cross-reference
 
 - Full workflow: `.cursor/skills/default-context-generator/SKILL.md` (steps 0 and 2).
-- Domain skills: table in the same skill and in `PROJECT_IDEA.md`.
+- Domain skills: table in the same skill (and in `PROJECT_IDEA.md` when present).

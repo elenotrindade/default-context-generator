@@ -12,7 +12,7 @@ Defines the **content** of the Default Context Generator: the orchestration skil
 
 - **`.cursor/skills/default-context-generator/SKILL.md`** — workflow, domain table, steps 1–5 and checklist.
 - **`.cursor/skills/<name>/SKILL.md`** — one folder per domain skill (arquiteto-software, system-design, backend, frontend, ux-ui, devops, seguranca, marketing, testing, data-database, docs-tecnico, acessibilidade, performance).
-- **`.cursor/rules/gerar-contexto.mdc`** — alwaysApply rule that points to the skill and to PROJECT_IDEA/README.
+- **`.cursor/rules/gerar-contexto.mdc`** — alwaysApply rule that points to the skill and to README (and PROJECT_IDEA when present).
 
 ## Conventions and decisions
 

@@ -31,7 +31,7 @@ When analyzing and documenting, map the project to the areas below and use the c
 
 ### 0. Detect and interpret existing documentation
 
-Goal: **reuse** any documentation already in the repo, in any format, and **index it by area of expertise**.
+Goal: **reuse** any documentation already in the repo, in any format, and **index it by area of expertise**. **README** (README.md, README.* at root) is the first source to consider (industry standard) — overview, quick start; then CONTRIBUTING, ARCHITECTURE, and the rest.
 
 - **Detect** typical documentation files and folders (without relying on a single convention):
   - Root: `README*`, `CONTRIBUTING*`, `CHANGELOG*`, `ARCHITECTURE*`, `docs/`, `doc/`, `.github/` (workflows, issue/PR templates).
@@ -58,7 +58,7 @@ Detailed reference for patterns and indexing: `docs/context/doc-existing-repos.m
 
 Create or update in `docs/context/` (or `.cursor/context/`):
 
-- **README or index** (`docs/context/README.md`): overview, stack, links to documents by area; if there is relevant existing doc, reference where it came from (e.g. "Overview based on README.md and docs/architecture/.").
+- **README or index** (`docs/context/README.md`): overview, stack, links to documents by area; if there is relevant existing doc, reference where it came from (e.g. "Overview based on README.md and docs/architecture/."). **If the project has no README** (or it is empty/irrelevant), **create a minimal overview**: generate `docs/context/README.md` as the context index and, when appropriate, suggest or add a root README with vision, stack and links to `docs/context/`.
 - **One document per relevant area** (e.g. `backend.md`, `frontend.md`, `api.md`), containing:
   - What that area does in the project
   - Where it is in the code (folders, main files)
@@ -97,4 +97,4 @@ If desired, add `docs/best-practices.md` or specific rules with code patterns, c
 
 ## Reference
 
-See in the same repository: `PROJECT_IDEA.md` for full requirements and `README.md` for overview.
+In this repository: `README.md` for overview; `PROJECT_IDEA.md` for full requirements (when present). For any repo: prefer README first, then PROJECT_IDEA if it exists.

@@ -7,26 +7,34 @@ import { localize } from "./nls";
 /** Default prompt (English) — agent receives this so behavior is consistent across locales. */
 const PROMPT_DEFAULT = `Generate this project's context for Cursor: documentation by area, rules with skill allocation, and references to the project and technologies.
 
-Required references (use as source of truth):
-- PROJECT_IDEA.md (if present at root) — vision, what to generate, domain skills and stack.
-- .cursor/skills/default-context-generator/SKILL.md (if present) — full workflow and skills table.
+**Required outputs (you MUST create ALL THREE in this run):**
+1) **docs/context/** — README.md plus at least one doc per relevant area (e.g. backend.md, frontend.md). Do not skip this.
+2) **.cursor/rules/** — one or more .mdc rules with skill allocation. Do not finish until docs/context/, .cursor/rules/, and .cursor/skills/ are created.
+3) **.cursor/skills/** — at least one skill per relevant area (e.g. .cursor/skills/backend/SKILL.md, .cursor/skills/frontend/SKILL.md). Skills are the best optimization for AI: Cursor loads them when rules reference them. Do not skip this.
 
-Domain skills (focus areas) — map the project to these areas and document each that applies. In rules, allocate the skill name from the table (e.g. "When changing the API, use the backend skill"):
+Required references (use as source of truth, in this order):
+- README (README.md, README.* at project root) — overview, stack, how to use the project. This is the first place to look (industry standard).
+- .cursor/skills/default-context-generator/SKILL.md (if present) — read it first and follow its full workflow (interpret existing doc → analyze repo → docs by area → rules with skill allocation). Use the skills table there to map the project and to allocate skills explicitly in rules so Cursor gets maximum benefit.
+- PROJECT_IDEA.md (if present at root) — vision, scope, domain skills and stack (repos that use this file).
+
+Skills in rules: In each rule, state explicitly which skill to use for which task (e.g. "When changing the API, use the backend skill"). This ensures Cursor uses the right skills per task and maximizes their value.
+
+Domain skills (focus areas) — map the project to these areas and document each that applies:
 
 | Area | Skill | When to use |
 |------|--------|-------------|
-| Architecture, modules, boundaries, evolution | arquiteto-software | Architecture decisions, layers, domains, ADRs |
+| Architecture, modules, boundaries, evolution | software-architecture | Architecture decisions, layers, domains, ADRs |
 | Scalability, availability, resilience, data at scale | system-design | System design, throughput, failures, queues, trade-offs |
 | APIs, services, business logic | backend | Server, API, workers, ORM |
 | Web UI, components, state | frontend | React, Vue, SPA, bundler |
 | Design, flows, design system | ux-ui | Layouts, visual patterns, UI copy |
 | CI/CD, containers, infra | devops | Pipeline, Docker, deploy |
-| Auth, sensitive data, OWASP | seguranca | Login, permissions, input |
+| Auth, sensitive data, OWASP | security | Login, permissions, input |
 | Copy, landing, ads | marketing | Commercial copy, CTAs |
 | Tests, QA, mocks | testing | Unit, e2e, coverage |
 | Database, schemas, migrations | data-database | SQL, ORM, ETL |
-| README, API docs, guides | docs-tecnico | Project documentation |
-| a11y, ARIA, keyboard | acessibilidade | Accessible interfaces |
+| README, API docs, guides | technical-docs | Project documentation |
+| a11y, ARIA, keyboard | accessibility | Accessible interfaces |
 | Bundle, queries, cache | performance | Optimization |
 
 (Each skill in .cursor/skills/<name>/SKILL.md when present in the workspace.)
@@ -41,18 +49,29 @@ Steps (in order):
 - Summarize in 1–2 paragraphs: what the project does, main stack and areas present.
 
 2) Context documentation in docs/context/
-- README.md: overview, stack, links to docs by area.
+- README.md: overview, stack, links to docs by area. If the project has no README (or it is empty/irrelevant), create a minimal overview: use docs/context/README.md as the context index and, when appropriate, suggest or add a root README with vision, stack and links to docs/context/.
 - One doc per relevant area (e.g. backend.md, frontend.md): what that area does in the project, where it is in the code, conventions, references to official docs of the technologies.
 
 3) Rules in .cursor/rules/ (.mdc format)
-- Skill allocation: in each rule, state explicitly which skill to use in which situation (e.g. "When changing the API, use the backend skill").
+- Skill allocation: in each rule, state explicitly which skill to use in which situation (e.g. "When changing the API, use the backend skill") so Cursor uses skills effectively.
 - Project reference: point to docs/context/, repo README, architecture.
 - Technology references: links or names of official docs (React, FastAPI, etc.) used in the project.
 - Concise (< 50 lines), with description, globs or alwaysApply. Suggestion: one core rule (alwaysApply) with context and skills per task; others by glob (e.g. **/*.ts → backend, **/*.tsx → frontend).
 
-4) Optional: skills in .cursor/skills/ and docs/best-practices.md (code patterns, conventions, how to use the skills).
+4) Skills in .cursor/skills/ (required for best AI optimization)
+- Create .cursor/skills/<area>/SKILL.md for each relevant area. When REPO OUTPUT LANGUAGE is English, use English folder names only: backend, frontend, devops, testing, performance, system-design, ux-ui, security, accessibility, technical-docs, software-architecture, data-database, marketing (do not use Portuguese slugs like acessibilidade, seguranca, docs-tecnico, arquiteto-software). When language is Portuguese, Portuguese slugs are fine. Match the area names used in docs/context/ and in rules.
+- Each SKILL.md: YAML frontmatter with \`name:\` (slug, same as folder name) and \`description:\` (one line: when to use for this project); body with "When to use" and a reference to docs/context/<area>.md. Keep each skill short and project-specific (what this repo uses, where the code lives, link to the context doc). All content inside SKILL.md in the language chosen (English or Portuguese).
+- Rules already reference these skills by name; having the actual SKILL.md files in the repo allows Cursor to load them and gives the best AI behavior. Do not skip this step.
 
-By the end: docs/context/ with overview and at least one doc per relevant area; .cursor/rules/ with rules that allocate skills and reference project and technologies.`;
+5) Optional: docs/best-practices.md (code patterns, conventions, how to use the skills).
+
+**Before finishing — verify all required outputs exist:**
+- [ ] docs/context/README.md exists
+- [ ] At least one docs/context/<area>.md exists (e.g. backend.md, frontend.md)
+- [ ] .cursor/rules/ contains at least one .mdc file
+- [ ] .cursor/skills/ contains at least one <area>/SKILL.md (e.g. backend/SKILL.md, frontend/SKILL.md)
+
+By the end: docs/context/ with overview and at least one doc per relevant area; .cursor/rules/ with rules that allocate skills; .cursor/skills/ with at least one skill per relevant area; all referencing the project and technologies.`;
 
 const CONFIG_KEY = "defaultContextGenerator.configPath";
 
@@ -92,7 +111,10 @@ async function ensureDefaultConfigFile(): Promise<void> {
   }
 }
 
-/** Lê o prompt do arquivo de config (se existir) ou retorna o default. */
+/** Sentinel in the current default prompt; if the config file doesn't contain it, we treat it as an old version and use built-in prompt. */
+const PROMPT_VERSION_SENTINEL = "Required outputs (you MUST create ALL THREE in this run)";
+
+/** Lê o prompt do arquivo de config (se existir) ou retorna o default. Se o path for o arquivo padrão e o conteúdo for versão antiga (sem sentinel), usa PROMPT_DEFAULT do código. */
 function getPromptFromConfig(): string {
   const raw = getConfigPath();
   if (!raw) return PROMPT_DEFAULT;
@@ -103,8 +125,12 @@ function getPromptFromConfig(): string {
     const trimmed = content.trim();
     if (trimmed.startsWith("{")) {
       const obj = JSON.parse(content) as { prompt?: string };
-      return typeof obj.prompt === "string" ? obj.prompt : PROMPT_DEFAULT;
+      const prompt = typeof obj.prompt === "string" ? obj.prompt : PROMPT_DEFAULT;
+      return prompt.includes(PROMPT_VERSION_SENTINEL) ? prompt : PROMPT_DEFAULT;
     }
+    const normalizedPath = path.normalize(raw).replace(/\\/g, "/");
+    const isDefaultFile = normalizedPath.endsWith(".cursor/default-context-prompt.txt") || normalizedPath.endsWith("default-context-prompt.txt");
+    if (isDefaultFile && !content.includes(PROMPT_VERSION_SENTINEL)) return PROMPT_DEFAULT;
     return trimmed || PROMPT_DEFAULT;
   } catch {
     return PROMPT_DEFAULT;
@@ -225,7 +251,7 @@ function getLanguageBlockTop(language: "en" | "pt" | "mixed"): string {
   const blocks: Record<"en" | "pt" | "mixed", string> = {
     en: `---
 REPO OUTPUT LANGUAGE: English (selected in the extension menu).
-You MUST write ALL generated content in English: file names in docs/context/ (e.g. backend.md, frontend.md, extension.md — do not translate file names), section titles, body text, .cursor/rules/ content, and code examples. Use English for your reasoning and planning throughout so the output stays consistent.
+You MUST write ALL generated content in English: file and folder names in English: docs/context/ (e.g. backend.md, frontend.md, technical-docs.md, security.md, accessibility.md — no Portuguese file names); .cursor/skills/ (e.g. accessibility, security, technical-docs, software-architecture — never use Portuguese: not acessibilidade, seguranca, docs-tecnico, arquiteto-software), section titles, body text, .cursor/rules/ content, and code examples. Use English for your reasoning and planning throughout so the output stays consistent.
 ---
 
 `,
@@ -247,7 +273,7 @@ Use a mixed approach: write new or shared documentation in English; keep or mirr
 
 /** Language instruction at the end of the prompt (reinforcement). */
 const LANGUAGE_INSTRUCTIONS: Record<"en" | "pt" | "mixed", string> = {
-  en: "Reminder: All generated documentation, rules, file content, and code examples MUST be in English. Follow the REPO OUTPUT LANGUAGE above.",
+  en: "Reminder: All generated documentation, rules, file content, and code examples MUST be in English. Use English folder names in .cursor/skills/ (e.g. accessibility, security, technical-docs, software-architecture — not acessibilidade, seguranca, docs-tecnico, arquiteto-software). Follow the REPO OUTPUT LANGUAGE above.",
   pt: "Reminder: All generated documentation, rules, file content, and code examples MUST be in Portuguese. Follow the REPO OUTPUT LANGUAGE above.",
   mixed: "Reminder: Follow the mixed language rule above: English for new/shared docs, Portuguese where already used; keep per-file consistency.",
 };
@@ -278,12 +304,17 @@ function getRepoLanguage(): RepoLanguage | "ask" {
 }
 const AUTO_STATE_PREFIX = "dcg_auto_";
 
-/** True if workspace already has docs/context/ or .cursor/rules/ with content (no need to auto-run). */
+/** True if workspace already has docs/context/, .cursor/rules/, or .cursor/skills/ with content (no need to auto-run). */
 function hasContextInWorkspace(cwd: string): boolean {
   const contextDir = path.join(cwd, "docs", "context");
   if (fs.existsSync(contextDir) && fs.readdirSync(contextDir).length > 0) return true;
   const rulesDir = path.join(cwd, ".cursor", "rules");
   if (fs.existsSync(rulesDir) && fs.readdirSync(rulesDir).some((f) => f.endsWith(".mdc"))) return true;
+  const skillsDir = path.join(cwd, ".cursor", "skills");
+  if (fs.existsSync(skillsDir) && fs.readdirSync(skillsDir).some((d) => {
+    const skillDir = path.join(skillsDir, d);
+    return fs.statSync(skillDir).isDirectory() && fs.existsSync(path.join(skillDir, "SKILL.md"));
+  })) return true;
   return false;
 }
 
@@ -402,7 +433,11 @@ async function runCore(
             if (code === 0) {
               const hasContext = fs.existsSync(path.join(cwd, "docs", "context")) && fs.readdirSync(path.join(cwd, "docs", "context")).length > 0;
               const hasRules = fs.existsSync(path.join(cwd, ".cursor", "rules")) && fs.readdirSync(path.join(cwd, ".cursor", "rules")).some((f) => f.endsWith(".mdc"));
-              if (hasContext || hasRules) {
+              const hasSkills = fs.existsSync(path.join(cwd, ".cursor", "skills")) && fs.readdirSync(path.join(cwd, ".cursor", "skills")).some((d) => {
+                const skillDir = path.join(cwd, ".cursor", "skills", d);
+                return fs.statSync(skillDir).isDirectory() && fs.existsSync(path.join(skillDir, "SKILL.md"));
+              });
+              if (hasContext || hasRules || hasSkills) {
                 if (!silent) vscode.window.showInformationMessage(localize("success.ready"));
               } else {
                 const needsAuth = /Authentication required|CURSOR_API_KEY|agent login/i.test(stderrText);
@@ -574,6 +609,7 @@ function getPopupHtml(defaultContent: string, configPath: string, repoLanguage: 
   <div class="actions">
     <button id="btnGerar">${escapeHtml(localize("popup.btnGenerate"))}</button>
     <button id="btnConfig" class="secondary">${escapeHtml(btnConfig)}</button>
+    <button id="btnRestoreDefault" class="secondary">${escapeHtml(localize("popup.btnRestoreDefault"))}</button>
     <button id="btnAbrirChat" class="secondary">${escapeHtml(localize("popup.btnChat"))}</button>
     <button id="btnAgentLogin" class="secondary">${escapeHtml(localize("popup.btnAgentLogin"))}</button>
   </div>
@@ -590,6 +626,7 @@ function getPopupHtml(defaultContent: string, configPath: string, repoLanguage: 
       vscode.postMessage({ type: 'gerar', language: lang, model: model });
     };
     document.getElementById('btnConfig').onclick = () => vscode.postMessage({ type: 'apontarOuCriarConfig' });
+    document.getElementById('btnRestoreDefault').onclick = () => vscode.postMessage({ type: 'resetDefaultPrompt' });
     document.getElementById('btnAbrirChat').onclick = () => vscode.postMessage({ type: 'abrirNoChat' });
     document.getElementById('btnAgentLogin').onclick = () => vscode.postMessage({ type: 'agentLogin' });
   </script>
@@ -625,6 +662,11 @@ function showPopup(context: vscode.ExtensionContext): () => Promise<void> {
           await runCore(folder, lang, { model });
         } else if (msg.type === "apontarOuCriarConfig") {
           await vscode.commands.executeCommand("defaultContextGenerator.apontarOuCriarConfig");
+          const newPath = getConfigPath();
+          const configModel = vscode.workspace.getConfiguration().get<string>(CONFIG_MODEL, "").trim();
+          panel.webview.html = getPopupHtml(getDefaultConfigContent(), newPath, getRepoLanguage(), configModel);
+        } else if (msg.type === "resetDefaultPrompt") {
+          await vscode.commands.executeCommand("defaultContextGenerator.resetDefaultPrompt");
           const newPath = getConfigPath();
           const configModel = vscode.workspace.getConfiguration().get<string>(CONFIG_MODEL, "").trim();
           panel.webview.html = getPopupHtml(getDefaultConfigContent(), newPath, getRepoLanguage(), configModel);
@@ -697,6 +739,25 @@ async function apontarOuCriarConfig() {
   await vscode.window.showTextDocument(doc);
 }
 
+/** Overwrites the workspace default prompt file with the extension's current PROMPT_DEFAULT and sets config to it. Use when the workspace file is outdated. */
+async function resetDefaultPrompt() {
+  const folder = vscode.workspace.workspaceFolders?.[0];
+  if (!folder) {
+    await vscode.window.showErrorMessage(localize("error.openFolder"));
+    return;
+  }
+  const dir = path.join(folder.uri.fsPath, ".cursor");
+  const fullPath = path.join(dir, "default-context-prompt.txt");
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(fullPath, getDefaultConfigContent(), "utf-8");
+    await setConfigPath(DEFAULT_CONFIG_RELATIVE);
+    await vscode.window.showInformationMessage(localize("resetDefaultPrompt.success", fullPath));
+  } catch (e) {
+    await vscode.window.showErrorMessage(localize("error.writeFile", e instanceof Error ? e.message : String(e)));
+  }
+}
+
 async function abrirNoChat() {
   const prompt = getPromptFromConfig();
   await vscode.env.clipboard.writeText(prompt);
@@ -751,6 +812,9 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("defaultContextGenerator.agentLogin", agentLogin)
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("defaultContextGenerator.resetDefaultPrompt", resetDefaultPrompt)
   );
 
   const statusBarItem = vscode.window.createStatusBarItem(
