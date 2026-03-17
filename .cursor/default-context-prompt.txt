@@ -1,0 +1,48 @@
+Generate this project's context for Cursor: documentation by area, rules with skill allocation, and references to the project and technologies.
+
+Required references (use as source of truth):
+- PROJECT_IDEA.md (if present at root) — vision, what to generate, domain skills and stack.
+- .cursor/skills/default-context-generator/SKILL.md (if present) — full workflow and skills table.
+
+Domain skills (focus areas) — map the project to these areas and document each that applies. In rules, allocate the skill name from the table (e.g. "When changing the API, use the backend skill"):
+
+| Area | Skill | When to use |
+|------|--------|-------------|
+| Architecture, modules, boundaries, evolution | arquiteto-software | Architecture decisions, layers, domains, ADRs |
+| Scalability, availability, resilience, data at scale | system-design | System design, throughput, failures, queues, trade-offs |
+| APIs, services, business logic | backend | Server, API, workers, ORM |
+| Web UI, components, state | frontend | React, Vue, SPA, bundler |
+| Design, flows, design system | ux-ui | Layouts, visual patterns, UI copy |
+| CI/CD, containers, infra | devops | Pipeline, Docker, deploy |
+| Auth, sensitive data, OWASP | seguranca | Login, permissions, input |
+| Copy, landing, ads | marketing | Commercial copy, CTAs |
+| Tests, QA, mocks | testing | Unit, e2e, coverage |
+| Database, schemas, migrations | data-database | SQL, ORM, ETL |
+| README, API docs, guides | docs-tecnico | Project documentation |
+| a11y, ARIA, keyboard | acessibilidade | Accessible interfaces |
+| Bundle, queries, cache | performance | Optimization |
+
+(Each skill in .cursor/skills/<name>/SKILL.md when present in the workspace.)
+
+Steps (in order):
+
+1) Analyze the repository
+- Folder structure (root and first levels; ignore node_modules, .git, build).
+- Stack: languages and frameworks (package.json, requirements.txt, go.mod, Cargo.toml, etc.) and versions.
+- Entrypoints: main, app, index, main routes.
+- Areas present: which of the skills above apply and where in the code each appears.
+- Summarize in 1–2 paragraphs: what the project does, main stack and areas present.
+
+2) Context documentation in docs/context/
+- README.md: overview, stack, links to docs by area.
+- One doc per relevant area (e.g. backend.md, frontend.md): what that area does in the project, where it is in the code, conventions, references to official docs of the technologies.
+
+3) Rules in .cursor/rules/ (.mdc format)
+- Skill allocation: in each rule, state explicitly which skill to use in which situation (e.g. "When changing the API, use the backend skill").
+- Project reference: point to docs/context/, repo README, architecture.
+- Technology references: links or names of official docs (React, FastAPI, etc.) used in the project.
+- Concise (< 50 lines), with description, globs or alwaysApply. Suggestion: one core rule (alwaysApply) with context and skills per task; others by glob (e.g. **/*.ts → backend, **/*.tsx → frontend).
+
+4) Optional: skills in .cursor/skills/ and docs/best-practices.md (code patterns, conventions, how to use the skills).
+
+By the end: docs/context/ with overview and at least one doc per relevant area; .cursor/rules/ with rules that allocate skills and reference project and technologies.

@@ -47,9 +47,25 @@ Required references (use as source of truth):
 - PROJECT_IDEA.md (if present at root) — vision, what to generate, domain skills and stack.
 - .cursor/skills/default-context-generator/SKILL.md (if present) — full workflow and skills table.
 
-Domain skills (focus areas) — map the project to these areas and document each that applies:
-arquiteto-software, system-design, backend, frontend, ux-ui, devops, seguranca, marketing, testing, data-database, docs-tecnico, acessibilidade, performance.
-(Each in .cursor/skills/<name>/SKILL.md when present in the workspace.)
+Domain skills (focus areas) — map the project to these areas and document each that applies. In rules, allocate the skill name from the table (e.g. "When changing the API, use the backend skill"):
+
+| Area | Skill | When to use |
+|------|--------|-------------|
+| Architecture, modules, boundaries, evolution | arquiteto-software | Architecture decisions, layers, domains, ADRs |
+| Scalability, availability, resilience, data at scale | system-design | System design, throughput, failures, queues, trade-offs |
+| APIs, services, business logic | backend | Server, API, workers, ORM |
+| Web UI, components, state | frontend | React, Vue, SPA, bundler |
+| Design, flows, design system | ux-ui | Layouts, visual patterns, UI copy |
+| CI/CD, containers, infra | devops | Pipeline, Docker, deploy |
+| Auth, sensitive data, OWASP | seguranca | Login, permissions, input |
+| Copy, landing, ads | marketing | Commercial copy, CTAs |
+| Tests, QA, mocks | testing | Unit, e2e, coverage |
+| Database, schemas, migrations | data-database | SQL, ORM, ETL |
+| README, API docs, guides | docs-tecnico | Project documentation |
+| a11y, ARIA, keyboard | acessibilidade | Accessible interfaces |
+| Bundle, queries, cache | performance | Optimization |
+
+(Each skill in .cursor/skills/<name>/SKILL.md when present in the workspace.)
 
 Steps (in order):
 
@@ -485,7 +501,7 @@ function runGerarContexto(promptOverride) {
 /** Run context generation automatically when workspace has no context, to avoid unnecessary manual runs and client usage. */
 async function tryAutoRun(extensionContext) {
     const config = vscode.workspace.getConfiguration();
-    const autoGenerate = config.get(CONFIG_AUTO, true);
+    const autoGenerate = config.get(CONFIG_AUTO, false);
     if (!autoGenerate)
         return;
     const folder = vscode.workspace.workspaceFolders?.[0];
