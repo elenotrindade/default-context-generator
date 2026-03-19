@@ -1,9 +1,18 @@
 Generate this project's context for Cursor: documentation by area, rules with skill allocation, and references to the project and technologies.
 
+**Stack and ecosystem (adapt first):**
+- Ecosystem-agnostic: the project may be web, mobile, desktop/native, CLI, embedded, or mixed. Identify the ecosystem(s) from folder structure, manifest files, and entrypoints; documentation must reflect what the repository actually is.
+- Priority 1 — Existing stack: if the repo already has detectable technologies (languages, frameworks, tools) — e.g. from package.json, requirements.txt, go.mod, Cargo.toml, pubspec.yaml, build.gradle, Xcode project, Dockerfile, etc. — describe and organize documentation around that stack; do not invent a different one.
+- Priority 2 — No stack: if the project is empty, idea-only (e.g. README with vision), or has a described problem without implementation, recommend a stack suited to the problem/domain and generate docs/context (and rules/skills) assuming that recommended stack, with a 1–2 sentence justification per area.
+
+**Required outputs (you MUST create ALL THREE in this run):**
+1) **docs/context/** — README.md plus at least one doc per relevant area (e.g. backend.md, frontend.md). Do not skip this.
+2) **.cursor/rules/** — one or more .mdc rules with skill allocation. Do not finish until docs/context/, .cursor/rules/, and .cursor/skills/ are created.
+3) **.cursor/skills/** — at least one skill per relevant area (e.g. .cursor/skills/backend/SKILL.md, .cursor/skills/frontend/SKILL.md). Skills are the best optimization for AI: Cursor loads them when rules reference them. Do not skip this.
+
 Required references (use as source of truth, in this order):
 - README (README.md, README.* at project root) — overview, stack, how to use the project. This is the first place to look (industry standard).
 - .cursor/skills/default-context-generator/SKILL.md (if present) — read it first and follow its full workflow (interpret existing doc → analyze repo → docs by area → rules with skill allocation). Use the skills table there to map the project and to allocate skills explicitly in rules so Cursor gets maximum benefit.
-- PROJECT_IDEA.md (if present at root) — vision, scope, domain skills and stack (repos that use this file).
 
 Skills in rules: In each rule, state explicitly which skill to use for which task (e.g. "When changing the API, use the backend skill"). This ensures Cursor uses the right skills per task and maximizes their value.
 
@@ -31,14 +40,20 @@ Steps (in order):
 
 1) Analyze the repository
 - Folder structure (root and first levels; ignore node_modules, .git, build).
-- Stack: languages and frameworks (package.json, requirements.txt, go.mod, Cargo.toml, etc.) and versions.
+- Stack: languages and frameworks (package.json, requirements.txt, go.mod, Cargo.toml, pubspec.yaml, build.gradle, etc.) and versions.
 - Entrypoints: main, app, index, main routes.
+- Ecosystem(s): identify web, mobile, native/desktop, CLI, or mixed from structure and dependency files.
+- Conclude explicitly: (a) "Existing stack" — list technologies found and ecosystem(s); or (b) "No stack" — summarize the problem/vision from README or folder names so you can recommend a stack later.
 - Areas present: which of the skills above apply and where in the code each appears.
-- Summarize in 1–2 paragraphs: what the project does, main stack and areas present.
+- Summarize in 1–2 paragraphs: what the project does, main stack (or "no stack") and areas present.
 
 2) Context documentation in docs/context/
+- Use docs-as-code: keep docs in Markdown in the repo; reference real code paths and examples to avoid drift.
+- Structure (Diátaxis as guide, not rigid): Overview/README (what the project does, for whom, getting started); per-area docs (Reference/Explanation); optional how-to guides for tasks (e.g. setup, deploy); optional tutorials only for libs/SDKs or onboarding.
 - README.md: overview, stack, links to docs by area. If the project has no README (or it is empty/irrelevant), create a minimal overview: use docs/context/README.md as the context index and, when appropriate, suggest or add a root README with vision, stack and links to docs/context/.
+- If conclusion was "No stack": add a "Recommended stack" subsection in docs/context/README.md (or a dedicated doc) with technologies per area (backend, frontend, DB, etc.) and a brief justification from project context (e.g. "REST API → FastAPI or Express"; "mobile → React Native or Flutter depending on constraints").
 - One doc per relevant area (e.g. backend.md, frontend.md): what that area does in the project, where it is in the code, conventions, references to official docs of the technologies.
+- ADRs (optional): for significant architecture decisions, suggest docs/adr/ or a section in docs/context/ with short records: context, decision, consequences.
 
 3) Rules in .cursor/rules/ (.mdc format)
 - Skill allocation: in each rule, state explicitly which skill to use in which situation (e.g. "When changing the API, use the backend skill") so Cursor uses skills effectively.
@@ -46,6 +61,17 @@ Steps (in order):
 - Technology references: links or names of official docs (React, FastAPI, etc.) used in the project.
 - Concise (< 50 lines), with description, globs or alwaysApply. Suggestion: one core rule (alwaysApply) with context and skills per task; others by glob (e.g. **/*.ts → backend, **/*.tsx → frontend).
 
-4) Optional: skills in .cursor/skills/ and docs/best-practices.md (code patterns, conventions, how to use the skills).
+4) Skills in .cursor/skills/ (required for best AI optimization)
+- Create .cursor/skills/<area>/SKILL.md for each relevant area. When REPO OUTPUT LANGUAGE is English, use English folder names only: backend, frontend, devops, testing, performance, system-design, ux-ui, security, accessibility, technical-docs, software-architecture, data-database, marketing (do not use Portuguese slugs like acessibilidade, seguranca, docs-tecnico, arquiteto-software). When language is Portuguese, Portuguese slugs are fine. Match the area names used in docs/context/ and in rules.
+- Each SKILL.md: YAML frontmatter with `name:` (slug, same as folder name) and `description:` (one line: when to use for this project); body with "When to use" and a reference to docs/context/<area>.md. Keep each skill short and project-specific (what this repo uses, where the code lives, link to the context doc). All content inside SKILL.md in the language chosen (English or Portuguese).
+- Rules already reference these skills by name; having the actual SKILL.md files in the repo allows Cursor to load them and gives the best AI behavior. Do not skip this step.
 
-By the end: docs/context/ with overview and at least one doc per relevant area; .cursor/rules/ with rules that allocate skills and reference project and technologies.
+5) Optional: docs/best-practices.md (code patterns, conventions, how to use the skills; can include how-to style guides aligned with Diátaxis).
+
+**Before finishing — verify all required outputs exist:**
+- [ ] docs/context/README.md exists
+- [ ] At least one docs/context/<area>.md exists (e.g. backend.md, frontend.md)
+- [ ] .cursor/rules/ contains at least one .mdc file
+- [ ] .cursor/skills/ contains at least one <area>/SKILL.md (e.g. backend/SKILL.md, frontend/SKILL.md)
+
+By the end: docs/context/ with overview and at least one doc per relevant area; .cursor/rules/ with rules that allocate skills; .cursor/skills/ with at least one skill per relevant area; all referencing the project and technologies.
