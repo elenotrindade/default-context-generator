@@ -5,6 +5,7 @@
 Defines the **content** of the Default Context Generator: the orchestration skill, domain skills, and the rules that trigger the flow. All in Markdown, consumed by Cursor.
 
 - **Orchestration skill:** `default-context-generator` — full workflow (interpret existing doc and index by area → analyze repo → docs/context/ reusing doc → .cursor/rules/ → optionally skills and best practices).
+- The orchestration skill includes a **consultative one-shot approach gate** (STOP: no file writes) before generating `docs/context/` and `.cursor/rules/`, so the agent does not infer critical approaches without user confirmation.
 - **Domain skills:** software-architecture, system-design, backend, frontend, ux-ui, devops, security, marketing, testing, data-database, technical-docs, accessibility, performance — used to map and document areas in any repo.
 - **Trigger rule:** `gerar-contexto.mdc` — when the user asks to generate context, the agent must use the default-context-generator skill.
 

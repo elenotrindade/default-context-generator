@@ -33,6 +33,7 @@ The extension exposes a **status bar button** (bottom right: "Generate context")
 ## Conventions and decisions
 
 - The prompt is **self-contained**: it describes the workflow for the agent when the user sends it in chat.
+- The prompt includes a **consultative one-shot approach gate**: when critical decisions have multiple valid approaches (e.g., stack assumption for “No stack”), the agent asks the user to select approaches and then only generates `docs/context/` and `.cursor/rules/` (and `.cursor/skills/` as needed) after the user answers.
 - Chat-opening commands are tried in order: `aichat.openChat`, `aichat.show-ai-chat`, `workbench.action.chat.open`, `composer.newAgentChat`, `cursor.chat.open`; then paste via `editor.action.clipboardPasteAction` after a delay.
 - No CLI or runtime dependencies beyond VS Code/Cursor.
 

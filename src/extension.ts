@@ -9,12 +9,21 @@ const PROMPT_DEFAULT = `Generate this project's context for Cursor: documentatio
 **Stack and ecosystem (adapt first):**
 - Ecosystem-agnostic: the project may be web, mobile, desktop/native, CLI, embedded, or mixed. Identify the ecosystem(s) from folder structure, manifest files, and entrypoints; documentation must reflect what the repository actually is.
 - Priority 1 — Existing stack: if the repo already has detectable technologies (languages, frameworks, tools) — e.g. from package.json, requirements.txt, go.mod, Cargo.toml, pubspec.yaml, build.gradle, Xcode project, Dockerfile, etc. — describe and organize documentation around that stack; do not invent a different one.
-- Priority 2 — No stack: if the project is empty, idea-only (e.g. README with vision), or has a described problem without implementation, recommend a stack suited to the problem/domain and generate docs/context (and rules/skills) assuming that recommended stack, with a 1–2 sentence justification per area.
+- Priority 2 — No stack: if the project is empty, idea-only (e.g. README with vision), or has a described problem without implementation, propose 2–4 stack approaches suited to the problem/domain (each with a 1–2 sentence justification per area). You MUST ask the user which stack approach to assume before generating any docs/context, .cursor/rules, or .cursor/skills.
 
 **Required outputs (you MUST create ALL THREE in this run):**
 1) **docs/context/** — README.md plus at least one doc per relevant area (e.g. backend.md, frontend.md). Do not skip this.
 2) **.cursor/rules/** — one or more .mdc rules with skill allocation. Do not finish until docs/context/, .cursor/rules/, and .cursor/skills/ are created.
 3) **.cursor/skills/** — at least one skill per relevant area (e.g. .cursor/skills/backend/SKILL.md, .cursor/skills/frontend/SKILL.md). Skills are the best optimization for AI: Cursor loads them when rules reference them. Do not skip this.
+
+You are allowed to pause to ask the one-shot approach questionnaire below. Still, you MUST create all required outputs after the user answers.
+
+**Consultative approach selection (critical):**
+- The agent must identify decision points where multiple approaches are valid.
+- For each decision point, the agent must propose 2–4 recommended options based on evidence from README/code/folder structure, but it MUST NOT pick any approach by inference.
+- The agent must ask the user to select approaches using ONE consolidated message (one-shot).
+- Do not create or modify any repository files (no docs/context, no .cursor/rules, no .cursor/skills) until the user answers the questionnaire.
+- After the user selects approaches, include “Common implementation cases” in the generated docs/context and .cursor/rules for each selected approach (brief and actionable bullets).
 
 **Path boundary (critical):**
 - Treat the opened workspace folder as the only writable root.
@@ -60,26 +69,36 @@ Steps (in order):
 - Areas present: which of the skills above apply and where in the code each appears.
 - Summarize in 1–2 paragraphs: what the project does, main stack (or "no stack") and areas present.
 
-2) Context documentation in docs/context/
+2) Critical approach consultation (STOP: no file writes)
+- Identify decision points where multiple approaches are valid.
+- At minimum: if the conclusion is "No stack", propose 2–4 stack approaches and ask the user which one to assume.
+- Also include at least 2 additional decisions (examples: documentation depth; rule granularity; skill allocation policy).
+- For each decision point, propose 2–4 options and include: evidence summary, pros/cons (1–2 lines), and what will change in the generated outputs.
+- Ask the user to select all approaches in ONE consolidated answer (one-shot).
+- If any decision is unanswered, stop and ask again.
+
+3) Context documentation in docs/context/
 - Use docs-as-code: keep docs in Markdown in the repo; reference real code paths and examples to avoid drift.
-- Structure (Diátaxis as guide, not rigid): Overview/README (what the project does, for whom, getting started); per-area docs (Reference/Explanation); optional how-to guides for tasks (e.g. setup, deploy); optional tutorials only for libs/SDKs or onboarding.
+- Structure (Diátaxis as guide, not rigid): pick a structure approach based on the user-selected documentation depth.
 - README.md: overview, stack, links to docs by area. If the project has no README (or it is empty/irrelevant), create a minimal overview: use docs/context/README.md as the context index and, when appropriate, suggest or add a root README with vision, stack and links to docs/context/.
-- If conclusion was "No stack": add a "Recommended stack" subsection in docs/context/README.md (or a dedicated doc) with technologies per area (backend, frontend, DB, etc.) and a brief justification from project context (e.g. "REST API → FastAPI or Express"; "mobile → React Native or Flutter depending on constraints").
+- If the user selected a stack approach: add a "Stack approach" subsection in docs/context/README.md with technologies per area and a brief justification from project context.
 - One doc per relevant area (e.g. backend.md, frontend.md): what that area does in the project, where it is in the code, conventions, references to official docs of the technologies.
+- For each selected approach, include “Common implementation cases” as short actionable bullets in the relevant area docs.
 - ADRs (optional): for significant architecture decisions, suggest docs/adr/ or a section in docs/context/ with short records: context, decision, consequences.
 
-3) Rules in .cursor/rules/ (.mdc format)
-- Skill allocation: in each rule, state explicitly which skill to use in which situation (e.g. "When changing the API, use the backend skill") so Cursor uses skills effectively.
+4) Rules in .cursor/rules/ (.mdc format)
+- Skill allocation: follow the user-selected skill allocation policy. In each rule, state explicitly which skill to use for which task (e.g. "When changing the API, use the backend skill") so Cursor uses skills effectively.
 - Project reference: point to docs/context/, repo README, architecture.
 - Technology references: links or names of official docs (React, FastAPI, etc.) used in the project.
+- Rule granularity: generate either a single core alwaysApply rule + globs or more task-specific rules, based on the user-selected option.
 - Concise (< 50 lines), with description, globs or alwaysApply. Suggestion: one core rule (alwaysApply) with context and skills per task; others by glob (e.g. **/*.ts → backend, **/*.tsx → frontend).
 
-4) Skills in .cursor/skills/ (required for best AI optimization)
+5) Skills in .cursor/skills/ (required for best AI optimization)
 - Create .cursor/skills/<area>/SKILL.md for each relevant area. When REPO OUTPUT LANGUAGE is English, use English folder names only: backend, frontend, devops, testing, performance, system-design, ux-ui, security, accessibility, technical-docs, software-architecture, data-database, marketing (do not use Portuguese slugs like acessibilidade, seguranca, docs-tecnico, arquiteto-software). When language is Portuguese, Portuguese slugs are fine. Match the area names used in docs/context/ and in rules.
 - Each SKILL.md: YAML frontmatter with \`name:\` (slug, same as folder name) and \`description:\` (one line: when to use for this project); body with "When to use" and a reference to docs/context/<area>.md. Keep each skill short and project-specific (what this repo uses, where the code lives, link to the context doc). All content inside SKILL.md in the language chosen (English or Portuguese).
 - Rules already reference these skills by name; having the actual SKILL.md files in the repo allows Cursor to load them and gives the best AI behavior. Do not skip this step.
 
-5) Optional: docs/best-practices.md (code patterns, conventions, how to use the skills; can include how-to style guides aligned with Diátaxis).
+6) Optional: docs/best-practices.md (code patterns, conventions, how to use the skills; can include how-to style guides aligned with Diátaxis).
 
 **Before finishing — verify all required outputs exist:**
 - [ ] docs/context/README.md exists

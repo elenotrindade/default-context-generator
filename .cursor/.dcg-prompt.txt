@@ -27,6 +27,13 @@ Domain skills (focus areas) — map the project to these areas and document each
 
 (Each skill in .cursor/skills/<name>/SKILL.md when present in the workspace.)
 
+**Consultative approach selection (critical):**
+- The agent must identify decision points where multiple approaches are valid.
+- For each decision point, the agent must propose 2–4 recommended options based on evidence from README/code/folder structure, but it MUST NOT pick any approach by inference.
+- The agent must ask the user to select approaches using ONE consolidated message (one-shot).
+- Do not create or modify any repository files (docs/context, .cursor/rules, .cursor/skills) until the user answers the questionnaire.
+- After the user selects approaches, include “Common implementation cases” in the generated docs/context and .cursor/rules for each selected approach (brief and actionable bullets).
+
 Steps (in order):
 
 1) Analyze the repository
@@ -36,16 +43,23 @@ Steps (in order):
 - Areas present: which of the skills above apply and where in the code each appears.
 - Summarize in 1–2 paragraphs: what the project does, main stack and areas present.
 
-2) Context documentation in docs/context/
+2) Critical approach consultation (STOP: no file writes)
+- Identify decision points where multiple approaches are valid.
+- At minimum: if the conclusion requires a stack assumption, propose 2–4 stack approaches and ask the user which one to assume.
+- Also include at least 2 additional decisions (examples: documentation depth; rule granularity; skill allocation policy).
+- Ask the user to select all approaches in ONE consolidated answer (one-shot).
+- If any decision is unanswered, stop and ask again.
+
+3) Context documentation in docs/context/
 - README.md: overview, stack, links to docs by area. If the project has no README (or it is empty/irrelevant), create a minimal overview: use docs/context/README.md as the context index and, when appropriate, suggest or add a root README with vision, stack and links to docs/context/.
 - One doc per relevant area (e.g. backend.md, frontend.md): what that area does in the project, where it is in the code, conventions, references to official docs of the technologies.
 
-3) Rules in .cursor/rules/ (.mdc format)
+4) Rules in .cursor/rules/ (.mdc format)
 - Skill allocation: in each rule, state explicitly which skill to use in which situation (e.g. "When changing the API, use the backend skill") so Cursor uses skills effectively.
 - Project reference: point to docs/context/, repo README, architecture.
 - Technology references: links or names of official docs (React, FastAPI, etc.) used in the project.
 - Concise (< 50 lines), with description, globs or alwaysApply. Suggestion: one core rule (alwaysApply) with context and skills per task; others by glob (e.g. **/*.ts → backend, **/*.tsx → frontend).
 
-4) Optional: skills in .cursor/skills/ and docs/best-practices.md (code patterns, conventions, how to use the skills).
+5) Optional: skills in .cursor/skills/ and docs/best-practices.md (code patterns, conventions, how to use the skills).
 
-By the end: docs/context/ with overview and at least one doc per relevant area; .cursor/rules/ with rules that allocate skills and reference project and technologies.
+By the end: docs/context/ with overview and at least one doc per relevant area; .cursor/rules/ with rules that allocate skills and reference project and technologies. Include “Common implementation cases” for the selected approaches.
