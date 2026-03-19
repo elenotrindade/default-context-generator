@@ -19,6 +19,8 @@ Defines the **content** of the Default Context Generator: the orchestration skil
 
 - Skills follow the Cursor format: YAML frontmatter (`name`, `description`) + Markdown body.
 - Rules are `.mdc` in `.cursor/rules/` with `description`, `alwaysApply` or `globs`.
+- Prefer **mutually exclusive globs** across rules to minimize overlap and reduce unnecessary context activation.
+- Keep at most one **alwaysApply** core rule for global instructions; place area-specific guidance in scoped glob rules.
 - When editing or creating skills/rules for other projects, use the domain skills as a checklist for what to cover per area.
 - Format reference: Cursor's create-rule and create-skill (official skills), when available.
 

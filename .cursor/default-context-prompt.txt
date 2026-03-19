@@ -85,7 +85,10 @@ Steps (in order):
 - Project reference: point to docs/context/, repo README, architecture.
 - Technology references: links or names of official docs (React, FastAPI, etc.) used in the project.
 - Rule granularity: generate either a single core alwaysApply rule + globs or more task-specific rules, based on the user-selected option.
-- Concise (< 50 lines), with description, globs or alwaysApply. Suggestion: one core rule (alwaysApply) with context and skills per task; others by glob (e.g. **/*.ts → backend, **/*.tsx → frontend).
+- Glob partitioning for performance (required): define globs to be mutually exclusive whenever possible; avoid overlapping catch-all patterns (for example, do not combine **/*.ts with src/**/*.ts in different rules). Prefer partition by responsibility/path first, then by extension.
+- Conflict fallback (required): if two responsibilities share the same extension, split by directory boundary (for example src/** vs scripts/**) instead of repeating broad extension globs.
+- AlwaysApply usage (required): keep at most one core alwaysApply rule for global policy only; do not duplicate area-specific instructions that already exist in glob-scoped rules.
+- Concise (< 50 lines), with description, globs or alwaysApply. Prefer one core rule (alwaysApply) with global policy and skills routing, plus non-overlapping glob rules per area.
 
 5) Skills in .cursor/skills/ (required for best AI optimization)
 - Create .cursor/skills/<area>/SKILL.md for each relevant area. When REPO OUTPUT LANGUAGE is English, use English folder names only: backend, frontend, devops, testing, performance, system-design, ux-ui, security, accessibility, technical-docs, software-architecture, data-database, marketing (do not use Portuguese slugs like acessibilidade, seguranca, docs-tecnico, arquiteto-software). When language is Portuguese, Portuguese slugs are fine. Match the area names used in docs/context/ and in rules.
