@@ -46,10 +46,6 @@
         "title": "%command.abrirNoChat%"
       },
       {
-        "command": "defaultContextGenerator.agentLogin",
-        "title": "%command.agentLogin%"
-      },
-      {
         "command": "defaultContextGenerator.resetDefaultPrompt",
         "title": "%command.resetDefaultPrompt%"
       }
@@ -84,11 +80,6 @@
           "default": "ask",
           "enumDescriptions": ["%config.repoLanguage.en%", "%config.repoLanguage.pt%", "%config.repoLanguage.mixed%", "%config.repoLanguage.ask%"],
           "description": "%config.repoLanguage.description%"
-        },
-        "defaultContextGenerator.model": {
-          "type": "string",
-          "default": "auto",
-          "description": "%config.model.description%"
         }
       }
     }

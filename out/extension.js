@@ -36,12 +36,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
-const child_process_1 = require("child_process");
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 const nls_1 = require("./nls");
 /** Default prompt (English) — agent receives this so behavior is consistent across locales. */
 const PROMPT_DEFAULT = `Generate this project's context for Cursor: documentation by area, rules with skill allocation, and references to the project and technologies.
+
+**Stack and ecosystem (adapt first):**
+- Ecosystem-agnostic: the project may be web, mobile, desktop/native, CLI, embedded, or mixed. Identify the ecosystem(s) from folder structure, manifest files, and entrypoints; documentation must reflect what the repository actually is.
+- Priority 1 — Existing stack: if the repo already has detectable technologies (languages, frameworks, tools) — e.g. from package.json, requirements.txt, go.mod, Cargo.toml, pubspec.yaml, build.gradle, Xcode project, Dockerfile, etc. — describe and organize documentation around that stack; do not invent a different one.
+- Priority 2 — No stack: if the project is empty, idea-only (e.g. README with vision), or has a described problem without implementation, recommend a stack suited to the problem/domain and generate docs/context (and rules/skills) assuming that recommended stack, with a 1–2 sentence justification per area.
 
 **Required outputs (you MUST create ALL THREE in this run):**
 1) **docs/context/** — README.md plus at least one doc per relevant area (e.g. backend.md, frontend.md). Do not skip this.
@@ -51,7 +55,6 @@ const PROMPT_DEFAULT = `Generate this project's context for Cursor: documentatio
 Required references (use as source of truth, in this order):
 - README (README.md, README.* at project root) — overview, stack, how to use the project. This is the first place to look (industry standard).
 - .cursor/skills/default-context-generator/SKILL.md (if present) — read it first and follow its full workflow (interpret existing doc → analyze repo → docs by area → rules with skill allocation). Use the skills table there to map the project and to allocate skills explicitly in rules so Cursor gets maximum benefit.
-- PROJECT_IDEA.md (if present at root) — vision, scope, domain skills and stack (repos that use this file).
 
 Skills in rules: In each rule, state explicitly which skill to use for which task (e.g. "When changing the API, use the backend skill"). This ensures Cursor uses the right skills per task and maximizes their value.
 
@@ -79,14 +82,20 @@ Steps (in order):
 
 1) Analyze the repository
 - Folder structure (root and first levels; ignore node_modules, .git, build).
-- Stack: languages and frameworks (package.json, requirements.txt, go.mod, Cargo.toml, etc.) and versions.
+- Stack: languages and frameworks (package.json, requirements.txt, go.mod, Cargo.toml, pubspec.yaml, build.gradle, etc.) and versions.
 - Entrypoints: main, app, index, main routes.
+- Ecosystem(s): identify web, mobile, native/desktop, CLI, or mixed from structure and dependency files.
+- Conclude explicitly: (a) "Existing stack" — list technologies found and ecosystem(s); or (b) "No stack" — summarize the problem/vision from README or folder names so you can recommend a stack later.
 - Areas present: which of the skills above apply and where in the code each appears.
-- Summarize in 1–2 paragraphs: what the project does, main stack and areas present.
+- Summarize in 1–2 paragraphs: what the project does, main stack (or "no stack") and areas present.
 
 2) Context documentation in docs/context/
+- Use docs-as-code: keep docs in Markdown in the repo; reference real code paths and examples to avoid drift.
+- Structure (Diátaxis as guide, not rigid): Overview/README (what the project does, for whom, getting started); per-area docs (Reference/Explanation); optional how-to guides for tasks (e.g. setup, deploy); optional tutorials only for libs/SDKs or onboarding.
 - README.md: overview, stack, links to docs by area. If the project has no README (or it is empty/irrelevant), create a minimal overview: use docs/context/README.md as the context index and, when appropriate, suggest or add a root README with vision, stack and links to docs/context/.
+- If conclusion was "No stack": add a "Recommended stack" subsection in docs/context/README.md (or a dedicated doc) with technologies per area (backend, frontend, DB, etc.) and a brief justification from project context (e.g. "REST API → FastAPI or Express"; "mobile → React Native or Flutter depending on constraints").
 - One doc per relevant area (e.g. backend.md, frontend.md): what that area does in the project, where it is in the code, conventions, references to official docs of the technologies.
+- ADRs (optional): for significant architecture decisions, suggest docs/adr/ or a section in docs/context/ with short records: context, decision, consequences.
 
 3) Rules in .cursor/rules/ (.mdc format)
 - Skill allocation: in each rule, state explicitly which skill to use in which situation (e.g. "When changing the API, use the backend skill") so Cursor uses skills effectively.
@@ -99,7 +108,7 @@ Steps (in order):
 - Each SKILL.md: YAML frontmatter with \`name:\` (slug, same as folder name) and \`description:\` (one line: when to use for this project); body with "When to use" and a reference to docs/context/<area>.md. Keep each skill short and project-specific (what this repo uses, where the code lives, link to the context doc). All content inside SKILL.md in the language chosen (English or Portuguese).
 - Rules already reference these skills by name; having the actual SKILL.md files in the repo allows Cursor to load them and gives the best AI behavior. Do not skip this step.
 
-5) Optional: docs/best-practices.md (code patterns, conventions, how to use the skills).
+5) Optional: docs/best-practices.md (code patterns, conventions, how to use the skills; can include how-to style guides aligned with Diátaxis).
 
 **Before finishing — verify all required outputs exist:**
 - [ ] docs/context/README.md exists
@@ -169,155 +178,9 @@ function getPromptFromConfig() {
         return PROMPT_DEFAULT;
     }
 }
-/** Formats one NDJSON line from agent (stream-json) for readable output. Uses localize for UI language. */
-function formatStreamJsonLine(line) {
-    line = line.trim();
-    if (!line)
-        return null;
-    try {
-        const ev = JSON.parse(line);
-        const t = ev.type;
-        const sub = ev.subtype;
-        if (t === "system" && sub === "init") {
-            const model = ev.model ?? "agent";
-            return (0, nls_1.localize)("stream.session", model);
-        }
-        if (t === "user")
-            return null;
-        if (t === "assistant" && ev.message?.content) {
-            const text = ev.message.content.map((c) => c.text ?? "").join("").trim();
-            if (text)
-                return `[Agent] ${text}`;
-            return null;
-        }
-        if (t === "tool_call") {
-            const tc = ev.tool_call;
-            if (tc?.readToolCall) {
-                const pathArg = tc.readToolCall?.args?.path ?? "?";
-                return sub === "started" ? (0, nls_1.localize)("stream.reading", pathArg) : (0, nls_1.localize)("stream.readDone", pathArg);
-            }
-            if (tc?.writeToolCall) {
-                const pathArg = tc.writeToolCall?.args?.path ?? "?";
-                if (sub === "started")
-                    return (0, nls_1.localize)("stream.writing", pathArg);
-                const res = tc.writeToolCall?.result?.success;
-                if (res && res.linesCreated != null)
-                    return (0, nls_1.localize)("stream.writeDoneLines", pathArg, res.linesCreated);
-                return (0, nls_1.localize)("stream.writeDone", pathArg);
-            }
-            return sub === "started" ? (0, nls_1.localize)("stream.toolStart") : (0, nls_1.localize)("stream.toolOk");
-        }
-        if (t === "result" && sub === "success") {
-            const dur = ev.duration_ms;
-            return dur != null ? (0, nls_1.localize)("stream.completedIn", (dur / 1000).toFixed(1)) : (0, nls_1.localize)("stream.completed");
-        }
-    }
-    catch {
-        // not JSON (partial or other output)
-    }
-    return null;
-}
-function getAgentPath() {
-    const isWin = process.platform === "win32";
-    const candidates = [];
-    if (isWin) {
-        const localAppData = process.env.LOCALAPPDATA || "";
-        const userProfile = process.env.USERPROFILE || "";
-        if (localAppData) {
-            candidates.push(path.join(localAppData, "cursor-agent"));
-            const cursorBin = path.join(localAppData, "Programs", "Cursor", "resources", "app", "bin");
-            candidates.push(cursorBin);
-        }
-        if (userProfile) {
-            candidates.push(path.join(userProfile, ".local", "bin"));
-            candidates.push(path.join(userProfile, "AppData", "Local", "cursor", "bin"));
-        }
-    }
-    else {
-        const home = process.env.HOME || process.env.USERPROFILE || "";
-        if (home) {
-            candidates.push(path.join(home, ".local", "bin"));
-        }
-    }
-    // No Windows: priorizar agent.exe/agent.cmd (CLI) sobre cursor.exe (Electron) para evitar aviso e falha
-    const cursorNames = ["cursor.exe", "cursor.cmd", "cursor"];
-    const agentNames = ["agent.exe", "agent.cmd", "agent"];
-    const orderFirst = isWin ? agentNames : cursorNames;
-    const orderSecond = isWin ? cursorNames : agentNames;
-    for (const dir of candidates) {
-        if (!fs.existsSync(dir))
-            continue;
-        for (const name of orderFirst) {
-            const full = path.join(dir, name);
-            if (fs.existsSync(full)) {
-                const isAgent = agentNames.includes(name);
-                return {
-                    exe: full,
-                    argsPrefix: isAgent ? [] : ["agent"],
-                    addToPath: dir,
-                    useShell: isWin && (name.endsWith(".cmd") || (isAgent ? name === "agent" : !name.includes("."))),
-                };
-            }
-        }
-        for (const name of orderSecond) {
-            const full = path.join(dir, name);
-            if (fs.existsSync(full)) {
-                const isAgent = agentNames.includes(name);
-                return {
-                    exe: full,
-                    argsPrefix: isAgent ? [] : ["agent"],
-                    addToPath: dir,
-                    useShell: isWin && (name.endsWith(".cmd") || (isAgent ? name === "agent" : !name.includes("."))),
-                };
-            }
-        }
-    }
-    return null;
-}
-/** Language block at the TOP of the prompt so the agent sees it first. Makes the selected language mandatory for all output and reasoning. */
-function getLanguageBlockTop(language) {
-    const blocks = {
-        en: `---
-REPO OUTPUT LANGUAGE: English (selected in the extension menu).
-You MUST write ALL generated content in English: file and folder names in English: docs/context/ (e.g. backend.md, frontend.md, technical-docs.md, security.md, accessibility.md — no Portuguese file names); .cursor/skills/ (e.g. accessibility, security, technical-docs, software-architecture — never use Portuguese: not acessibilidade, seguranca, docs-tecnico, arquiteto-software), section titles, body text, .cursor/rules/ content, and code examples. Use English for your reasoning and planning throughout so the output stays consistent.
----
-
-`,
-        pt: `---
-REPO OUTPUT LANGUAGE: Portuguese (selected in the extension menu).
-You MUST write ALL generated content in Portuguese: file names in docs/context/ (e.g. backend.md, frontend.md — keep .md names; content inside in Portuguese), section titles, body text, .cursor/rules/ content, and code examples. Use Portuguese for your reasoning and planning throughout so the output stays consistent.
----
-
-`,
-        mixed: `---
-REPO OUTPUT LANGUAGE: Mixed (selected in the extension menu).
-Use a mixed approach: write new or shared documentation in English; keep or mirror existing Portuguese where it is already used in the codebase. File names in docs/context/ stay as in the workflow (e.g. backend.md, frontend.md). Per-file or per-area consistency is more important than a single language. Use the same language as the file/area for your reasoning when working on that part.
----
-
-`,
-    };
-    return blocks[language];
-}
-/** Language instruction at the end of the prompt (reinforcement). */
-const LANGUAGE_INSTRUCTIONS = {
-    en: "Reminder: All generated documentation, rules, file content, and code examples MUST be in English. Use English folder names in .cursor/skills/ (e.g. accessibility, security, technical-docs, software-architecture — not acessibilidade, seguranca, docs-tecnico, arquiteto-software). Follow the REPO OUTPUT LANGUAGE above.",
-    pt: "Reminder: All generated documentation, rules, file content, and code examples MUST be in Portuguese. Follow the REPO OUTPUT LANGUAGE above.",
-    mixed: "Reminder: Follow the mixed language rule above: English for new/shared docs, Portuguese where already used; keep per-file consistency.",
-};
 const CONFIG_AUTO = "defaultContextGenerator.autoGenerate";
 const CONFIG_AUTO_ONLY_WHEN_MISSING = "defaultContextGenerator.autoGenerateOnlyWhenMissing";
 const CONFIG_AUTO_LANG = "defaultContextGenerator.autoGenerateDefaultLanguage";
-const CONFIG_MODEL = "defaultContextGenerator.model";
-/** Sentinel for "Cursor default" in the dropdown; empty value can be buggy in HTML select. */
-const MODEL_DEFAULT_SENTINEL = "__default__";
-/** Model options for the selector. Value = slug for agent --model, or MODEL_DEFAULT_SENTINEL for Cursor default. */
-const MODEL_OPTIONS = [
-    { label: (0, nls_1.localize)("model.default"), value: MODEL_DEFAULT_SENTINEL },
-    { label: (0, nls_1.localize)("model.auto"), value: "auto" },
-    { label: (0, nls_1.localize)("model.opus"), value: "claude-4-6-opus" },
-    { label: (0, nls_1.localize)("model.sonnet46"), value: "claude-4-6-sonnet" },
-    { label: (0, nls_1.localize)("model.sonnet45"), value: "claude-4-5-sonnet" },
-];
 const CONFIG_REPO_LANGUAGE = "defaultContextGenerator.repoLanguage";
 function getRepoLanguage() {
     const v = vscode.workspace.getConfiguration().get(CONFIG_REPO_LANGUAGE);
@@ -342,197 +205,31 @@ function hasContextInWorkspace(cwd) {
         return true;
     return false;
 }
-/** Core run: generate context with the given language. Used by both manual command and auto. */
-async function runCore(folder, language, options = {}) {
-    const { silent = false, promptOverride, model } = options;
-    const modelArg = (model === undefined || model === MODEL_DEFAULT_SENTINEL ? "" : model).trim();
-    const basePrompt = promptOverride ?? getPromptFromConfig();
-    const promptContent = getLanguageBlockTop(language) + basePrompt.trimEnd() + "\n\n" + LANGUAGE_INSTRUCTIONS[language];
-    const cwd = folder.uri.fsPath;
-    const cursorDir = path.join(cwd, ".cursor");
-    const promptFileRel = ".cursor/.dcg-prompt.txt";
-    const promptFilePath = path.join(cwd, ".cursor", ".dcg-prompt.txt");
-    try {
-        if (!fs.existsSync(cursorDir))
-            fs.mkdirSync(cursorDir, { recursive: true });
-        fs.writeFileSync(promptFilePath, promptContent, "utf-8");
-    }
-    catch (e) {
-        await vscode.window.showErrorMessage((0, nls_1.localize)("error.createPromptFile", e instanceof Error ? e.message : String(e)));
+/** Command palette "Generate context": open chat with prompt, optionally ask language. */
+async function gerarContextoCommand(languageParam) {
+    const folder = vscode.workspace.workspaceFolders?.[0];
+    if (!folder) {
+        await vscode.window.showErrorMessage((0, nls_1.localize)("error.openFolder"));
         return;
     }
-    const prompt = `Execute exactly the instructions in this file. Read the file first, then follow it: ${promptFileRel}`;
-    const outputChannel = vscode.window.createOutputChannel((0, nls_1.localize)("popup.title"));
-    outputChannel.clear();
-    outputChannel.show();
-    outputChannel.appendLine((0, nls_1.localize)("output.generating", cwd));
-    if (modelArg)
-        outputChannel.appendLine(`Model: ${modelArg}`);
-    if (silent)
-        outputChannel.appendLine((0, nls_1.localize)("progress.auto"));
-    outputChannel.appendLine((0, nls_1.localize)("output.promptAt", promptFilePath));
-    outputChannel.appendLine("");
-    const agentRes = getAgentPath();
-    const exe = agentRes?.exe ?? "agent";
-    const args = [
-        ...(agentRes?.argsPrefix ?? []),
-        ...(modelArg ? ["--model", modelArg] : []),
-        "--print",
-        "--force",
-        "--output-format",
-        "stream-json",
-        "--stream-partial-output",
-        prompt,
-    ];
-    const useShell = agentRes?.useShell ?? true;
-    const env = agentRes?.addToPath
-        ? {
-            ...process.env,
-            PATH: agentRes.addToPath + path.delimiter + (process.env.PATH || ""),
-        }
-        : process.env;
-    await vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: (0, nls_1.localize)("popup.title"),
-        cancellable: false,
-    }, async (progress) => {
-        progress.report({ message: silent ? (0, nls_1.localize)("progress.auto") : (0, nls_1.localize)("progress.starting") });
-        let stderrText = "";
-        let stdoutBuffer = "";
-        return new Promise((resolve) => {
-            const child = (0, child_process_1.spawn)(exe, args, {
-                cwd,
-                shell: useShell,
-                env,
-            });
-            child.stdout?.on("data", (data) => {
-                stdoutBuffer += data.toString();
-                const lines = stdoutBuffer.split("\n");
-                stdoutBuffer = lines.pop() ?? "";
-                for (const line of lines) {
-                    const formatted = formatStreamJsonLine(line);
-                    if (formatted) {
-                        outputChannel.appendLine(formatted);
-                    }
-                }
-            });
-            child.stderr?.on("data", (data) => {
-                const s = data.toString();
-                stderrText += s;
-                outputChannel.append(s);
-            });
-            child.on("error", (err) => {
-                outputChannel.appendLine("");
-                outputChannel.appendLine((0, nls_1.localize)("error.agent", err.message));
-                outputChannel.appendLine("");
-                outputChannel.appendLine((0, nls_1.localize)("error.agentInstallWin"));
-                outputChannel.appendLine((0, nls_1.localize)("error.agentInstallPath"));
-                vscode.window.showErrorMessage((0, nls_1.localize)("error.cliNotFound"));
-                resolve();
-            });
-            child.on("close", (code, _signal) => {
-                if (stdoutBuffer.trim()) {
-                    const formatted = formatStreamJsonLine(stdoutBuffer);
-                    if (formatted)
-                        outputChannel.appendLine(formatted);
-                }
-                outputChannel.appendLine("");
-                progress.report({ message: (0, nls_1.localize)("progress.done") });
-                try {
-                    if (fs.existsSync(promptFilePath))
-                        fs.unlinkSync(promptFilePath);
-                }
-                catch {
-                    // ignora falha ao remover arquivo temporário
-                }
-                if (code === 0) {
-                    const hasContext = fs.existsSync(path.join(cwd, "docs", "context")) && fs.readdirSync(path.join(cwd, "docs", "context")).length > 0;
-                    const hasRules = fs.existsSync(path.join(cwd, ".cursor", "rules")) && fs.readdirSync(path.join(cwd, ".cursor", "rules")).some((f) => f.endsWith(".mdc"));
-                    const hasSkills = fs.existsSync(path.join(cwd, ".cursor", "skills")) && fs.readdirSync(path.join(cwd, ".cursor", "skills")).some((d) => {
-                        const skillDir = path.join(cwd, ".cursor", "skills", d);
-                        return fs.statSync(skillDir).isDirectory() && fs.existsSync(path.join(skillDir, "SKILL.md"));
-                    });
-                    if (hasContext || hasRules || hasSkills) {
-                        if (!silent)
-                            vscode.window.showInformationMessage((0, nls_1.localize)("success.ready"));
-                    }
-                    else {
-                        const needsAuth = /Authentication required|CURSOR_API_KEY|agent login/i.test(stderrText);
-                        const msg = (0, nls_1.localize)("warn.noOutput");
-                        if (needsAuth) {
-                            vscode.window.showWarningMessage(msg, (0, nls_1.localize)("action.login")).then((choice) => {
-                                if (choice === (0, nls_1.localize)("action.login")) {
-                                    void vscode.commands.executeCommand("defaultContextGenerator.agentLogin");
-                                }
-                            });
-                        }
-                        else {
-                            vscode.window.showWarningMessage(msg);
-                        }
-                    }
-                }
-                else if (code != null && code !== 0) {
-                    const needsAuth = /Authentication required|CURSOR_API_KEY|agent login/i.test(stderrText);
-                    if (needsAuth) {
-                        vscode.window.showWarningMessage((0, nls_1.localize)("warn.noOutputLogin"), (0, nls_1.localize)("action.login")).then((choice) => {
-                            if (choice === (0, nls_1.localize)("action.login")) {
-                                void vscode.commands.executeCommand("defaultContextGenerator.agentLogin");
-                            }
-                        });
-                    }
-                    else {
-                        vscode.window.showWarningMessage((0, nls_1.localize)("warn.exitCode", String(code)));
-                    }
-                }
-                resolve();
-            });
-        });
-    });
-}
-/** Manual command: use language param, config, or show language picker then run core. */
-function runGerarContexto(promptOverride) {
-    return async (languageParam) => {
-        const folder = vscode.workspace.workspaceFolders?.[0];
-        if (!folder) {
-            await vscode.window.showErrorMessage((0, nls_1.localize)("error.openFolder"));
+    let language;
+    if (languageParam) {
+        language = languageParam;
+    }
+    else if (getRepoLanguage() !== "ask") {
+        language = getRepoLanguage();
+    }
+    else {
+        const languageChoice = await vscode.window.showQuickPick([
+            { label: (0, nls_1.localize)("language.english"), value: "en" },
+            { label: (0, nls_1.localize)("language.portuguese"), value: "pt" },
+            { label: (0, nls_1.localize)("language.mixed"), value: "mixed" },
+        ], { title: (0, nls_1.localize)("popup.title"), placeHolder: (0, nls_1.localize)("language.pickTitle"), ignoreFocusOut: true });
+        if (!languageChoice)
             return;
-        }
-        let language;
-        if (languageParam) {
-            language = languageParam;
-        }
-        else if (getRepoLanguage() !== "ask") {
-            language = getRepoLanguage();
-        }
-        else {
-            const languageChoice = await vscode.window.showQuickPick([
-                { label: (0, nls_1.localize)("language.english"), value: "en" },
-                { label: (0, nls_1.localize)("language.portuguese"), value: "pt" },
-                { label: (0, nls_1.localize)("language.mixed"), value: "mixed" },
-            ], {
-                title: (0, nls_1.localize)("popup.title"),
-                placeHolder: (0, nls_1.localize)("language.pickTitle"),
-                ignoreFocusOut: true,
-            });
-            if (!languageChoice)
-                return;
-            language = languageChoice.value;
-        }
-        const configModel = vscode.workspace.getConfiguration().get(CONFIG_MODEL, "").trim();
-        const modelChoices = [
-            ...MODEL_OPTIONS,
-            ...(configModel ? [{ label: `${(0, nls_1.localize)("model.useSetting")} (${configModel})`, value: configModel }] : []),
-        ];
-        const modelChoice = await vscode.window.showQuickPick(modelChoices, {
-            title: (0, nls_1.localize)("popup.title"),
-            placeHolder: (0, nls_1.localize)("model.pickTitle"),
-            ignoreFocusOut: true,
-        });
-        if (!modelChoice)
-            return;
-        const selectedModel = modelChoice.value;
-        await runCore(folder, language, { promptOverride, model: selectedModel });
-    };
+        language = languageChoice.value;
+    }
+    await openChatWithPrompt({ appendLanguage: language });
 }
 /** Run context generation automatically when workspace has no context, to avoid unnecessary manual runs and client usage. */
 async function tryAutoRun(extensionContext) {
@@ -551,8 +248,7 @@ async function tryAutoRun(extensionContext) {
         return;
     extensionContext.globalState.update(stateKey, Date.now());
     const lang = config.get(CONFIG_AUTO_LANG, "en");
-    const model = config.get(CONFIG_MODEL, "").trim();
-    await runCore(folder, lang === "pt" || lang === "mixed" ? lang : "en", { silent: true, model: model || undefined });
+    await openChatWithPrompt({ appendLanguage: lang });
 }
 function escapeHtml(s) {
     return s
@@ -562,7 +258,7 @@ function escapeHtml(s) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
 }
-function getPopupHtml(defaultContent, configPath, repoLanguage, selectedModel = "") {
+function getPopupHtml(defaultContent, configPath, repoLanguage) {
     const hasConfig = configPath.length > 0;
     const escapedDefault = escapeHtml(defaultContent);
     const escapedPath = escapeHtml(configPath || (0, nls_1.localize)("popup.configNone"));
@@ -572,12 +268,6 @@ function getPopupHtml(defaultContent, configPath, repoLanguage, selectedModel = 
     const langMixed = escapeHtml((0, nls_1.localize)("language.mixed"));
     const repoLangLabel = escapeHtml((0, nls_1.localize)("popup.repoLanguageLabel"));
     const selected = repoLanguage === "ask" ? "en" : repoLanguage;
-    const modelLabel = escapeHtml((0, nls_1.localize)("popup.modelLabel"));
-    const modelSelected = selectedModel === "" ? MODEL_DEFAULT_SENTINEL : selectedModel;
-    const modelOptionsHtml = MODEL_OPTIONS.map((o) => `<option value="${escapeHtml(o.value)}" ${o.value === modelSelected ? "selected" : ""}>${escapeHtml(o.label)}</option>`).join("") +
-        (selectedModel && selectedModel !== MODEL_DEFAULT_SENTINEL && !MODEL_OPTIONS.some((o) => o.value === selectedModel)
-            ? `<option value="${escapeHtml(selectedModel)}" selected>${escapeHtml((0, nls_1.localize)("model.useSetting"))} (${escapeHtml(selectedModel)})</option>`
-            : "");
     return /* html */ `
 <!DOCTYPE html>
 <html>
@@ -611,18 +301,11 @@ function getPopupHtml(defaultContent, configPath, repoLanguage, selectedModel = 
       <option value="mixed" ${selected === "mixed" ? "selected" : ""}>${langMixed}</option>
     </select>
   </div>
-  <div class="repo-lang">
-    <label>${modelLabel}</label>
-    <select id="model">
-      ${modelOptionsHtml}
-    </select>
-  </div>
   <div class="actions">
     <button id="btnGerar">${escapeHtml((0, nls_1.localize)("popup.btnGenerate"))}</button>
     <button id="btnConfig" class="secondary">${escapeHtml(btnConfig)}</button>
     <button id="btnRestoreDefault" class="secondary">${escapeHtml((0, nls_1.localize)("popup.btnRestoreDefault"))}</button>
-    <button id="btnAbrirChat" class="secondary">${escapeHtml((0, nls_1.localize)("popup.btnChat"))}</button>
-    <button id="btnAgentLogin" class="secondary">${escapeHtml((0, nls_1.localize)("popup.btnAgentLogin"))}</button>
+    ${hasConfig ? `<button id="btnOpenPrompt" class="secondary">${escapeHtml((0, nls_1.localize)("popup.btnOpenPrompt"))}</button>` : ""}
   </div>
   <div class="config-section">
     <label>${escapeHtml((0, nls_1.localize)("popup.configLabel"))}</label>
@@ -632,14 +315,12 @@ function getPopupHtml(defaultContent, configPath, repoLanguage, selectedModel = 
   <script>
     const vscode = acquireVsCodeApi();
     document.getElementById('btnGerar').onclick = () => {
-      const lang = document.getElementById('repoLanguage').value;
-      const model = document.getElementById('model').value;
-      vscode.postMessage({ type: 'gerar', language: lang, model: model });
+      vscode.postMessage({ type: 'gerar', language: document.getElementById('repoLanguage').value });
     };
     document.getElementById('btnConfig').onclick = () => vscode.postMessage({ type: 'apontarOuCriarConfig' });
     document.getElementById('btnRestoreDefault').onclick = () => vscode.postMessage({ type: 'resetDefaultPrompt' });
-    document.getElementById('btnAbrirChat').onclick = () => vscode.postMessage({ type: 'abrirNoChat' });
-    document.getElementById('btnAgentLogin').onclick = () => vscode.postMessage({ type: 'agentLogin' });
+    const btnOpenPrompt = document.getElementById('btnOpenPrompt');
+    if (btnOpenPrompt) btnOpenPrompt.onclick = () => vscode.postMessage({ type: 'openPromptConfig' });
   </script>
 </body>
 </html>`;
@@ -649,8 +330,7 @@ function showPopup(context) {
         const configPath = getConfigPath();
         const defaultContent = getDefaultConfigContent();
         const panel = vscode.window.createWebviewPanel("defaultContextGenerator.popup", (0, nls_1.localize)("popup.title"), vscode.ViewColumn.One, { enableScripts: true, retainContextWhenHidden: true });
-        const configModel = vscode.workspace.getConfiguration().get(CONFIG_MODEL, "").trim();
-        panel.webview.html = getPopupHtml(defaultContent, configPath, getRepoLanguage(), configModel);
+        panel.webview.html = getPopupHtml(defaultContent, configPath, getRepoLanguage());
         panel.webview.onDidReceiveMessage(async (msg) => {
             if (msg.type === "gerar") {
                 const folder = vscode.workspace.workspaceFolders?.[0];
@@ -658,29 +338,37 @@ function showPopup(context) {
                     await vscode.window.showErrorMessage((0, nls_1.localize)("error.openFolder"));
                     return;
                 }
-                panel.dispose();
                 const lang = msg.language === "pt" || msg.language === "mixed" ? msg.language : "en";
-                const rawModel = (msg.model ?? "").trim();
-                const model = rawModel === "" || rawModel === MODEL_DEFAULT_SENTINEL ? undefined : rawModel;
-                await runCore(folder, lang, { model });
+                await openChatWithPrompt({ appendLanguage: lang });
             }
             else if (msg.type === "apontarOuCriarConfig") {
                 await vscode.commands.executeCommand("defaultContextGenerator.apontarOuCriarConfig");
                 const newPath = getConfigPath();
-                const configModel = vscode.workspace.getConfiguration().get(CONFIG_MODEL, "").trim();
-                panel.webview.html = getPopupHtml(getDefaultConfigContent(), newPath, getRepoLanguage(), configModel);
+                panel.webview.html = getPopupHtml(getDefaultConfigContent(), newPath, getRepoLanguage());
             }
             else if (msg.type === "resetDefaultPrompt") {
                 await vscode.commands.executeCommand("defaultContextGenerator.resetDefaultPrompt");
                 const newPath = getConfigPath();
-                const configModel = vscode.workspace.getConfiguration().get(CONFIG_MODEL, "").trim();
-                panel.webview.html = getPopupHtml(getDefaultConfigContent(), newPath, getRepoLanguage(), configModel);
+                panel.webview.html = getPopupHtml(getDefaultConfigContent(), newPath, getRepoLanguage());
             }
             else if (msg.type === "abrirNoChat") {
                 await vscode.commands.executeCommand("defaultContextGenerator.abrirNoChat");
             }
-            else if (msg.type === "agentLogin") {
-                await vscode.commands.executeCommand("defaultContextGenerator.agentLogin");
+            else if (msg.type === "openPromptConfig") {
+                const folder = vscode.workspace.workspaceFolders?.[0];
+                if (!folder)
+                    return;
+                const raw = getConfigPath().trim();
+                if (!raw)
+                    return;
+                const fullPath = path.isAbsolute(raw) ? raw : path.join(folder.uri.fsPath, raw);
+                try {
+                    const doc = await vscode.workspace.openTextDocument(fullPath);
+                    await vscode.window.showTextDocument(doc);
+                }
+                catch (e) {
+                    await vscode.window.showErrorMessage((0, nls_1.localize)("error.openPromptConfig", e instanceof Error ? e.message : String(e)));
+                }
             }
         }, undefined, context.subscriptions);
     };
@@ -761,33 +449,45 @@ async function resetDefaultPrompt() {
         await vscode.window.showErrorMessage((0, nls_1.localize)("error.writeFile", e instanceof Error ? e.message : String(e)));
     }
 }
-async function abrirNoChat() {
-    const prompt = getPromptFromConfig();
+/** Builds prompt with optional language instruction at the end. */
+function buildPromptForChat(appendLanguage) {
+    let prompt = getPromptFromConfig();
+    if (appendLanguage === "pt")
+        prompt = prompt.trimEnd() + "\n\nReply in Portuguese.";
+    else if (appendLanguage === "en")
+        prompt = prompt.trimEnd() + "\n\nReply in English.";
+    else if (appendLanguage === "mixed")
+        prompt = prompt.trimEnd() + "\n\nReply in the language that best fits each section (English or Portuguese).";
+    return prompt;
+}
+/** Copy prompt to clipboard, open chat, then paste into input (workaround: no API to set chat input). */
+async function openChatWithPrompt(options) {
+    const prompt = buildPromptForChat(options?.appendLanguage);
     await vscode.env.clipboard.writeText(prompt);
-    const chatCommands = ["aichat.openChat", "workbench.action.chat.open", "composer.newAgentChat", "cursor.chat.open"];
+    const chatCommands = ["aichat.openChat", "aichat.show-ai-chat", "workbench.action.chat.open", "composer.newAgentChat", "cursor.chat.open"];
     for (const cmd of chatCommands) {
         try {
             await vscode.commands.executeCommand(cmd);
             break;
         }
         catch {
-            // tenta o próximo
+            /* try next */
         }
     }
-    await vscode.window.showInformationMessage((0, nls_1.localize)("chat.copied"));
+    // Paste after chat input is focused; delay too short can paste into editor, too long lets user focus elsewhere.
+    const PASTE_DELAY_MS = 700;
+    setTimeout(async () => {
+        try {
+            await vscode.commands.executeCommand("editor.action.clipboardPasteAction");
+            await vscode.window.showInformationMessage((0, nls_1.localize)("chat.pasted"));
+        }
+        catch {
+            await vscode.window.showInformationMessage((0, nls_1.localize)("chat.copied"));
+        }
+    }, PASTE_DELAY_MS);
 }
-function agentLogin() {
-    const agentRes = getAgentPath();
-    const env = agentRes?.addToPath
-        ? { ...process.env, PATH: agentRes.addToPath + path.delimiter + (process.env.PATH || "") }
-        : process.env;
-    const term = vscode.window.createTerminal({
-        name: "Cursor CLI Login",
-        env: env,
-    });
-    term.sendText("agent login");
-    term.show();
-    vscode.window.showInformationMessage((0, nls_1.localize)("login.terminalOpened"));
+async function abrirNoChat() {
+    await openChatWithPrompt();
 }
 function activate(context) {
     void ensureDefaultConfigFile();
@@ -796,10 +496,9 @@ function activate(context) {
         tryAutoRun(context).catch(() => { });
     }, 4000);
     context.subscriptions.push(vscode.commands.registerCommand("defaultContextGenerator.showPopup", showPopup(context)));
-    context.subscriptions.push(vscode.commands.registerCommand("defaultContextGenerator.gerarContexto", (language) => runGerarContexto()(language)));
+    context.subscriptions.push(vscode.commands.registerCommand("defaultContextGenerator.gerarContexto", gerarContextoCommand));
     context.subscriptions.push(vscode.commands.registerCommand("defaultContextGenerator.apontarOuCriarConfig", apontarOuCriarConfig));
     context.subscriptions.push(vscode.commands.registerCommand("defaultContextGenerator.abrirNoChat", abrirNoChat));
-    context.subscriptions.push(vscode.commands.registerCommand("defaultContextGenerator.agentLogin", agentLogin));
     context.subscriptions.push(vscode.commands.registerCommand("defaultContextGenerator.resetDefaultPrompt", resetDefaultPrompt));
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBarItem.text = "$(sparkle) " + (0, nls_1.localize)("statusBar.text");

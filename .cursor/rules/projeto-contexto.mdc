@@ -18,12 +18,12 @@ This repository is the **Default Context Generator**. Use the context documentat
 |-----------------|--------------|
 | `src/extension.ts`, commands, clipboard, VS Code API | No specific domain skill; see [VS Code Extension API](https://code.visualstudio.com/api). TypeScript. |
 | `.cursor/skills/`, `.cursor/rules/`, generator content | **docs-tecnico** (structure, Cursor format); **default-context-generator** for the workflow. |
-| `README.md`, `PROJECT_IDEA.md` (if present), `docs/` | **docs-tecnico**; keep in sync with code and .cursor/. |
+| `README.md`, `docs/` | **docs-tecnico**; keep in sync with code and .cursor/. |
 | Request to "generate context" or "get context" | Rule **gerar-contexto** + skill **default-context-generator** (see .cursor/rules/gerar-contexto.mdc). |
 
 ## Keep documentation up to date
 
-When you change code, architecture, or conventions that affect what is described in `docs/context/` (or in README.md / `PROJECT_IDEA.md` when present), **update the corresponding document in the same workflow**. That avoids drift between code and context and keeps the context in sync with the current state.
+When you change code, architecture, or conventions that affect what is described in `docs/context/` (or in README.md), **update the corresponding document in the same workflow**. That avoids drift between code and context and keeps the context in sync with the current state.
 
 ## Technology references
 

@@ -5,7 +5,6 @@
   "command.gerarContexto": "Default Context Generator: Generate project context",
   "command.apontarOuCriarConfig": "Default Context Generator: Set or create config file",
   "command.abrirNoChat": "Default Context Generator: Open in chat (copy prompt and open chat)",
-  "command.agentLogin": "Default Context Generator: Log in to Cursor CLI",
   "command.resetDefaultPrompt": "Default Context Generator: Restore default prompt file",
   "config.title": "Default Context Generator",
   "config.configPath.description": "Path to the config file (prompt). Empty = use the default bot prompt. Can be .txt (text = prompt) or .json with a \"prompt\" field.",
@@ -16,6 +15,5 @@
   "config.repoLanguage.en": "English",
   "config.repoLanguage.pt": "Portuguese",
   "config.repoLanguage.mixed": "Mixed (large legacy codebases)",
-  "config.repoLanguage.ask": "Ask every time",
-  "config.model.description": "Agent model for context generation. Default: auto (Cursor picks). Examples: auto, claude-4-6-sonnet. Used for auto-run and as default in the model selector."
+  "config.repoLanguage.ask": "Ask every time"
 }

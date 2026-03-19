@@ -12,13 +12,9 @@ Automation that runs **inside Cursor** (the agent runs the flow) to generate **c
 - **Set up new projects** — get the repo ready with rules and context documentation.
 - **Get into existing projects** — extract and document the system by area, based on the code and technologies used.
 
-The core is **skills and rules**: Cursor analyzes the repo and writes the files in `.cursor/` and `docs/`. A CLI is not required; the logic lives in Markdown and is easy to evolve.
+The core is **skills and rules**: Cursor analyzes the repo and writes the files in `.cursor/` and `docs/`. **No CLI is required:** the extension opens the chat and pastes the prompt for you; you send and the agent generates the context.
 
-**Extension:** command "Default Context Generator: Generate project context" — copies the prompt to the clipboard and tries to open chat; you paste (Ctrl+V) and send.
-
-## Project vision
-
-The project vision, Cursor as executor, what the automation generates and the build order are in **[PROJECT_IDEA.md](./PROJECT_IDEA.md)**.
+**Extension:** "Generate context" (status bar or command palette) — opens the chat with the prompt already pasted; you send and the agent creates `docs/context/`, `.cursor/rules/`, and `.cursor/skills/` in the conversation.
 
 ## Build order
 
@@ -37,7 +33,6 @@ All in `.cursor/skills/<name>/SKILL.md`.
 
 ```
 defaultcontextgenerator/
-├── PROJECT_IDEA.md
 ├── README.md
 ├── package.json, src/, out/   # Cursor/VS Code extension
 ├── .cursor/
@@ -50,18 +45,9 @@ defaultcontextgenerator/
 ## Usage
 
 - **Via chat:** open a repo in Cursor and ask "generate this project's context" (with this repo's skills or the prompt below).
-- **Via extension:** **"Generate context"** button in the **status bar** (bottom right) or Ctrl+Shift+P → "Default Context Generator: Generate project context". The **Cursor CLI** runs in headless mode in the open workspace and generates `docs/context/` and `.cursor/rules/` — one click → environment ready. (Requires [Cursor CLI](https://cursor.com/docs/cli/installation) installed.)
+- **Via extension:** **"Generate context"** in the **status bar** (bottom right) or Ctrl+Shift+P → "Default Context Generator: Generate project context". The extension opens the chat and pastes the prompt; you send and the agent generates `docs/context/`, `.cursor/rules/`, and `.cursor/skills/` in the conversation. No CLI required.
 
-### Prerequisite: Cursor CLI
-
-The extension runs the `agent -p --force` command in the workspace. Install the Cursor CLI if you don't have it yet:
-
-- **Windows (PowerShell):** `irm 'https://cursor.com/install?win32=true' | iex`
-- **macOS/Linux:** `curl https://cursor.com/install -fsS | bash`
-
-See [Cursor CLI installation](https://cursor.com/docs/cli/installation).
-
-### Install and use in your Cursor
+### Install and use in Cursor
 
 **Cursor** does not list the VS Code Marketplace in its extension search (it uses Open VSX). So the easiest way is to install via **.vsix**:
 
@@ -84,6 +70,6 @@ In VS Code you can search for **Default Context Generator** in Extensions (Ctrl+
 
 ---
 
-After installing: open a repository, use **"Generate context"** in the status bar or **Ctrl+Shift+P** → "Default Context Generator: Generate project context". The agent output appears in the **"Default Context Generator"** panel; when it finishes, **"Environment ready!"** indicates that `docs/context/` and `.cursor/rules/` were generated.
+After installing: open a repository, use **"Generate context"** in the status bar or **Ctrl+Shift+P** → "Default Context Generator: Generate project context". The chat opens with the prompt pasted; send the message and the agent will generate `docs/context/`, `.cursor/rules/`, and `.cursor/skills/` in the conversation.
 
 For the agent to follow the full workflow (domain skills and interpretation of existing doc), copy the `.cursor/skills/` folder (and optionally `.cursor/rules/gerar-contexto.mdc`) to the repository where you want to generate context, or open this repo in a multi-root workspace.
