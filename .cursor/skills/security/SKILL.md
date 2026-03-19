@@ -1,5 +1,5 @@
 ---
-name: seguranca
+name: security
 description: Guides security practices in code and systems: authentication, authorization, sensitive data, OWASP and hardening. Use when reviewing or implementing auth, APIs and data handling.
 ---
 

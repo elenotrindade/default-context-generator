@@ -9,6 +9,6 @@ The extension does **not** run automatically by default. Auto-run can be enabled
 
 1. **Use the skill** `default-context-generator` (in `.cursor/skills/default-context-generator/SKILL.md`).
 2. Follow the workflow described there: **interpret existing documentation** (when present) and index it by area of expertise → analyze repo → generate docs in `docs/context/` (reusing existing doc) → generate rules in `.cursor/rules/` (with skill allocation and references to the project and technologies) → optionally skills and best practices.
-3. Use the **domain skills** listed in default-context-generator (arquiteto-software, system-design, backend, frontend, ux-ui, devops, seguranca, marketing, testing, data-database, docs-tecnico, acessibilidade, performance) as a guide when mapping and documenting each area of the project.
+3. Use the **domain skills** listed in default-context-generator (software-architecture, system-design, backend, frontend, ux-ui, devops, security, marketing, testing, data-database, technical-docs, accessibility, performance) as a guide when mapping and documenting each area of the project.
 
 Project reference: `README.md` at the repo root.

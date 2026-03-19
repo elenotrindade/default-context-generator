@@ -1,9 +1,13 @@
 ---
-name: docs-tecnico
+name: technical-docs
 description: Guides writing of technical documentation: README, APIs, architecture and guides. Use when creating or maintaining project docs, code comments and references.
 ---
 
 # Technical Documentation
+
+## In this repository
+
+Use when editing `README.md`, `docs/context/`, `.cursor/rules/`, or `.cursor/skills/` in this project. Conventions and file map: [docs/context/technical-docs.md](../../docs/context/technical-docs.md).
 
 ## Scope
 

@@ -1,5 +1,5 @@
 ---
-name: arquiteto-software
+name: software-architecture
 description: Guides software architecture decisions, patterns, layers, boundaries and system evolution. Use when designing or reviewing architecture, modules, domains, integrations and technical trade-offs.
 ---
 

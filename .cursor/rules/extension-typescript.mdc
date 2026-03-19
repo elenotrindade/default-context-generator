@@ -12,6 +12,7 @@ When editing `src/` (Cursor/VS Code extension):
 - Entry point: `activate()` in `extension.ts`; the main command is `defaultContextGenerator.gerarContexto`.
 - Keep the default prompt (`PROMPT_DEFAULT` in `extension.ts`) aligned with the workflow in `.cursor/skills/default-context-generator/SKILL.md`.
 - **i18n:** UI strings live in `src/nls.ts` (en/pt); manifest strings in `package.nls.json` and `package.nls.pt.json`. Follow the rule in `.cursor/rules/i18n.mdc`.
-- Documentation: [docs/context/extension.md](../../docs/context/extension.md).
+- **UX copy** in the webview/popup: use **ux-ui** for tone, layout, and microcopy; use **accessibility** when adjusting focus order, labels, or keyboard paths.
+- Documentation: [docs/context/extension.md](../../docs/context/extension.md); i18n details in [docs/context/i18n.md](../../docs/context/i18n.md).
 
 Reference: [VS Code Extension API](https://code.visualstudio.com/api).

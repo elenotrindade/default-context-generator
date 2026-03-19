@@ -1,0 +1,15 @@
+---
+description: docs/context Markdown — keep index and links aligned with skills
+globs: docs/context/**/*.md
+alwaysApply: false
+---
+
+# Context documentation
+
+When editing files under `docs/context/`:
+
+- Use the **technical-docs** skill (`.cursor/skills/technical-docs/SKILL.md`) for structure, tone, and keeping the index consistent.
+- After renames or new area docs, update [docs/context/README.md](../../docs/context/README.md) links and the **Project areas** table.
+- If a change reflects new extension or generator behavior, update the relevant area doc ([extension.md](../../docs/context/extension.md), [skills-e-rules.md](../../docs/context/skills-e-rules.md), [technical-docs.md](../../docs/context/technical-docs.md), [i18n.md](../../docs/context/i18n.md)) in the same workflow.
+
+Reference: [docs/context/README.md](../../docs/context/README.md).

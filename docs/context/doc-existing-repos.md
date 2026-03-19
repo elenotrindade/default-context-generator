@@ -14,12 +14,12 @@ This document describes how the Default Context Generator **detects**, **interpr
 
 | Pattern | Typical use | Suggested area(s) |
 |--------|-------------|-------------------|
-| `README`, `README.md`, `README.*` | Overview, quick start, installation | docs-tecnico, all (overview) |
-| `CONTRIBUTING`, `CONTRIBUTING.md` | How to contribute, tests, PRs | docs-tecnico, testing |
-| `CHANGELOG`, `CHANGELOG.md` | Change history | docs-tecnico |
-| `ARCHITECTURE`, `ARCHITECTURE.md` | System architecture | arquiteto-software, system-design |
-| `API.md`, `api.md` | API description | backend, docs-tecnico |
-| `SECURITY`, `SECURITY.md` | Security policy, reporting vulnerabilities | seguranca, docs-tecnico |
+| `README`, `README.md`, `README.*` | Overview, quick start, installation | technical-docs, all (overview) |
+| `CONTRIBUTING`, `CONTRIBUTING.md` | How to contribute, tests, PRs | technical-docs, testing |
+| `CHANGELOG`, `CHANGELOG.md` | Change history | technical-docs |
+| `ARCHITECTURE`, `ARCHITECTURE.md` | System architecture | software-architecture, system-design |
+| `API.md`, `api.md` | API description | backend, technical-docs |
+| `SECURITY`, `SECURITY.md` | Security policy, reporting vulnerabilities | security, technical-docs |
 | `DESIGN`, `design.md` | Product/UI design | ux-ui, frontend |
 | `DEPLOY`, `deploy.md`, `DEPLOYMENT` | How to deploy | devops |
 
@@ -27,14 +27,14 @@ This document describes how the Default Context Generator **detects**, **interpr
 
 | Folder | Typical content | Suggested area(s) |
 |--------|-----------------|-------------------|
-| `docs/`, `documentation/` | Guides, specs, tutorials | docs-tecnico + specific content |
-| `doc/` | Same (convention in some ecosystems) | docs-tecnico + specific content |
-| `architecture/`, `docs/architecture/` | Diagrams, ADRs, decisions | arquiteto-software, system-design |
-| `adr/`, `decisions/`, `docs/adr/` | Architecture Decision Records | arquiteto-software |
-| `api/`, `docs/api/`, `openapi/` | API spec (OpenAPI, etc.) | backend, docs-tecnico |
+| `docs/`, `documentation/` | Guides, specs, tutorials | technical-docs + specific content |
+| `doc/` | Same (convention in some ecosystems) | technical-docs + specific content |
+| `architecture/`, `docs/architecture/` | Diagrams, ADRs, decisions | software-architecture, system-design |
+| `adr/`, `decisions/`, `docs/adr/` | Architecture Decision Records | software-architecture |
+| `api/`, `docs/api/`, `openapi/` | API spec (OpenAPI, etc.) | backend, technical-docs |
 | `spec/`, `specs/`, `design-docs/` | Specifications, design | Content-dependent |
-| `wiki/` | Project wiki | docs-tecnico + specific content |
-| `.github/` | workflows, ISSUE_TEMPLATE, PULL_REQUEST_TEMPLATE, CODEOWNERS | devops, docs-tecnico |
+| `wiki/` | Project wiki | technical-docs + specific content |
+| `.github/` | workflows, ISSUE_TEMPLATE, PULL_REQUEST_TEMPLATE, CODEOWNERS | devops, technical-docs |
 
 ### 2.3 File formats
 
@@ -58,21 +58,21 @@ For each document found:
 
 | Content / typical keywords | Area(s) |
 |---------------------------|---------|
-| Layers, modules, boundaries, ADR, architecture decisions | arquiteto-software |
+| Layers, modules, boundaries, ADR, architecture decisions | software-architecture |
 | Scalability, availability, queues, throughput, resilience | system-design |
 | Endpoints, REST, GraphQL, server, workers, ORM | backend |
 | Components, React/Vue/Svelte, SPA, bundler, state | frontend |
 | Layout, design system, flows, UI copy | ux-ui |
 | CI/CD, Docker, Kubernetes, pipeline, deploy, infra | devops |
-| Auth, permissions, OWASP, sensitive data | seguranca |
+| Auth, permissions, OWASP, sensitive data | security |
 | Copy, landing, CTAs, ads | marketing |
 | Tests, unit, e2e, mocks, coverage, TDD | testing |
 | Database, schema, migrations, SQL, ETL | data-database |
-| README, guides, API docs, how to use | docs-tecnico |
-| a11y, ARIA, keyboard, screen reader | acessibilidade |
+| README, guides, API docs, how to use | technical-docs |
+| a11y, ARIA, keyboard, screen reader | accessibility |
 | Bundle size, queries, cache, optimization | performance |
 
-A single document can be indexed in several areas (e.g. README that covers API + deploy → backend + devops + docs-tecnico).
+A single document can be indexed in several areas (e.g. README that covers API + deploy → backend + devops + technical-docs).
 
 ## 4. Produce the document → area(s) map
 

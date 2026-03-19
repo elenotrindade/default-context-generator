@@ -14,6 +14,7 @@ This project is **internationalized**: **primary language is English**, **second
 - **Extension**: strings are in `package.nls.json` (en) and `package.nls.pt.json` (pt); runtime messages in `src/nls.ts` (en/pt). The UI follows the Cursor/VS Code display language.
 - **When adding or editing** rules, skills, or documentation: write in **English** by default; add or update **Portuguese** translations when you touch that content (or note "PT: pending" if deferred).
 - **Default agent prompt** (generated context workflow): kept in **English** so the agent behavior is consistent across locales.
+- **Skill folder names** under `.cursor/skills/` use **English slugs** (e.g. `technical-docs`, `software-architecture`) so Cursor resolves skills reliably; Portuguese docs (e.g. `README.pt.md`) still refer to those same folder names.
 
 ## Where translations live
 

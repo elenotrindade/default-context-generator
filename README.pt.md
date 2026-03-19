@@ -29,9 +29,9 @@ A visão do projeto, Cursor como executor, o que a automação gera e a ordem de
 ## Skills
 
 - **Orquestração:** `default-context-generator` — fluxo completo (interpretar doc existente → analisar → contexto → rules → skills).
-- **Domínio:** `arquiteto-software`, `system-design`, `backend`, `frontend`, `ux-ui`, `devops`, `seguranca`, `marketing`, `testing`, `data-database`, `docs-tecnico`, `acessibilidade`, `performance`.
+- **Domínio:** `software-architecture`, `system-design`, `backend`, `frontend`, `ux-ui`, `devops`, `security`, `marketing`, `testing`, `data-database`, `technical-docs`, `accessibility`, `performance`.
 
-Todas em `.cursor/skills/<nome>/SKILL.md`.
+Todas em `.cursor/skills/<nome>/SKILL.md`. **Nomes de pastas em inglês** (como `technical-docs`, `software-architecture`) para o Cursor carregar as skills corretamente, mesmo com documentação em português.
 
 ## Estrutura
 
@@ -41,10 +41,10 @@ defaultcontextgenerator/
 ├── README.md
 ├── package.json, src/, out/   # Extensão Cursor/VS Code
 ├── .cursor/
-│   ├── rules/         # gerar-contexto, projeto-contexto, extension-typescript, i18n
+│   ├── rules/         # gerar-contexto, projeto-contexto, extension-typescript, i18n, context-docs
 │   └── skills/        # default-context-generator + 13 skills de domínio
 └── docs/
-    └── context/       # Contexto deste repo (README + extension, skills-e-rules, docs-tecnico)
+    └── context/       # Contexto deste repo (README + extension, skills-e-rules, technical-docs)
 ```
 
 ## Uso

@@ -10,16 +10,17 @@ This repository is the **Default Context Generator**. Use the context documentat
 ## Where the context is
 
 - **Overview and index:** [docs/context/README.md](../../docs/context/README.md)
-- **By area:** [extension.md](../../docs/context/extension.md), [skills-e-rules.md](../../docs/context/skills-e-rules.md), [docs-tecnico.md](../../docs/context/docs-tecnico.md), [doc-existing-repos.md](../../docs/context/doc-existing-repos.md) (interpreting existing doc in target repos)
+- **By area:** [extension.md](../../docs/context/extension.md), [skills-e-rules.md](../../docs/context/skills-e-rules.md), [technical-docs.md](../../docs/context/technical-docs.md), [doc-existing-repos.md](../../docs/context/doc-existing-repos.md), [i18n.md](../../docs/context/i18n.md)
 
 ## Skill allocation (in this repo)
 
 | When working on | Use as guide |
 |-----------------|--------------|
-| `src/extension.ts`, commands, clipboard, VS Code API | No specific domain skill; see [VS Code Extension API](https://code.visualstudio.com/api). TypeScript. |
-| `.cursor/skills/`, `.cursor/rules/`, generator content | **docs-tecnico** (structure, Cursor format); **default-context-generator** for the workflow. |
-| `README.md`, `docs/` | **docs-tecnico**; keep in sync with code and .cursor/. |
-| Request to "generate context" or "get context" | Rule **gerar-contexto** + skill **default-context-generator** (see .cursor/rules/gerar-contexto.mdc). |
+| `src/extension.ts`, commands, clipboard, VS Code API | [VS Code Extension API](https://code.visualstudio.com/api), [TypeScript](https://www.typescriptlang.org/docs/), [docs/context/extension.md](../../docs/context/extension.md). |
+| `src/nls.ts`, `package.nls*.json`, UI copy / webview text | Rule **i18n**; for popup labels and flows also **ux-ui**; for keyboard/ARIA in webviews **accessibility**. |
+| `.cursor/skills/`, `.cursor/rules/`, generator Markdown content | **technical-docs** (structure, Cursor format); **default-context-generator** for the full workflow. |
+| `README.md`, `docs/`, `docs/context/` | **technical-docs**; keep in sync with code and `.cursor/`. |
+| Request to "generate context" or "get context" | Rule **gerar-contexto** + skill **default-context-generator** (see `.cursor/rules/gerar-contexto.mdc`). |
 
 ## Keep documentation up to date
 

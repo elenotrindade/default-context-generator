@@ -13,18 +13,18 @@ When analyzing and documenting, map the project to the areas below and use the c
 
 | Area | Skill | When to use |
 |------|--------|-------------|
-| Architecture, modules, boundaries, evolution | arquiteto-software | Architecture decisions, layers, domains, ADRs |
+| Architecture, modules, boundaries, evolution | software-architecture | Architecture decisions, layers, domains, ADRs |
 | Scalability, availability, resilience, data at scale | system-design | System design, throughput, failures, queues, trade-offs |
 | APIs, services, business logic | backend | Server, API, workers, ORM |
 | Web UI, components, state | frontend | React, Vue, SPA, bundler |
 | Design, flows, design system | ux-ui | Layouts, visual patterns, UI copy |
 | CI/CD, containers, infra | devops | Pipeline, Docker, deploy |
-| Auth, sensitive data, OWASP | seguranca | Login, permissions, input |
+| Auth, sensitive data, OWASP | security | Login, permissions, input |
 | Copy, landing, ads | marketing | Commercial copy, CTAs |
 | Tests, QA, mocks | testing | Unit, e2e, coverage |
 | Database, schemas, migrations | data-database | SQL, ORM, ETL |
-| README, API docs, guides | docs-tecnico | Project documentation |
-| a11y, ARIA, keyboard | acessibilidade | Accessible interfaces |
+| README, API docs, guides | technical-docs | Project documentation |
+| a11y, ARIA, keyboard | accessibility | Accessible interfaces |
 | Bundle, queries, cache | performance | Optimization |
 
 ## Workflow (run in order)
@@ -40,7 +40,7 @@ Goal: **reuse** any documentation already in the repo, in any format, and **inde
 - **Interpret** each document found:
   - Identify **type** (overview, contribution, architecture, API, deploy, tests, a11y, etc.) and **audience** (developer, contributor, user).
   - Extract **purpose**, **conventions**, and **decisions** mentioned.
-  - Map the content (or sections) to one or more **areas of expertise** from the domain skills table (e.g. API README → backend + docs-tecnico; CONTRIBUTING with tests → testing; deploy doc → devops).
+  - Map the content (or sections) to one or more **areas of expertise** from the domain skills table (e.g. API README → backend + technical-docs; CONTRIBUTING with tests → testing; deploy doc → devops).
 - **Produce a map** document → area(s): which file/folder feeds which area, for use in step 2. If there is no documentation, the map is empty and the flow continues with code analysis only.
 
 Detailed reference for patterns and indexing: `docs/context/doc-existing-repos.md` (in this repo).

@@ -25,7 +25,7 @@ The core is **skills and rules**: Cursor analyzes the repo and writes the files 
 ## Skills
 
 - **Orchestration:** `default-context-generator` — full flow (interpret existing doc → analyze → context → rules → skills).
-- **Domain:** `arquiteto-software`, `system-design`, `backend`, `frontend`, `ux-ui`, `devops`, `seguranca`, `marketing`, `testing`, `data-database`, `docs-tecnico`, `acessibilidade`, `performance`.
+- **Domain:** `software-architecture`, `system-design`, `backend`, `frontend`, `ux-ui`, `devops`, `security`, `marketing`, `testing`, `data-database`, `technical-docs`, `accessibility`, `performance`.
 
 All in `.cursor/skills/<name>/SKILL.md`.
 
@@ -36,10 +36,10 @@ defaultcontextgenerator/
 ├── README.md
 ├── package.json, src/, out/   # Cursor/VS Code extension
 ├── .cursor/
-│   ├── rules/         # gerar-contexto, projeto-contexto, extension-typescript, i18n
+│   ├── rules/         # gerar-contexto, projeto-contexto, extension-typescript, i18n, context-docs
 │   └── skills/        # default-context-generator + 13 domain skills
 └── docs/
-    └── context/       # This repo's context (README + extension, skills-e-rules, docs-tecnico)
+    └── context/       # This repo's context (README + extension, skills-e-rules, technical-docs)
 ```
 
 ## Usage

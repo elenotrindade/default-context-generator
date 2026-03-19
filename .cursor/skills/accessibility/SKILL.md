@@ -1,5 +1,5 @@
 ---
-name: acessibilidade
+name: accessibility
 description: Guides web accessibility (a11y): ARIA, semantics, contrast, keyboard and screen readers. Use when implementing or reviewing interfaces for accessibility.
 ---
 

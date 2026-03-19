@@ -7,12 +7,13 @@ Centralizes the **project vision**, **usage** and **extension testing instructio
 - **README.md** — summary, skills, structure, usage (chat and extension), how to install and test the extension locally and via .vsix.
 - **PROJECT_IDEA.md** (when present) — vision, what the automation generates, Cursor as executor, flow, rules requirements, build order, technical scope, future extension, next steps.
 - **docs/context/** — context documentation generated for this repo (this directory). Includes **doc-existing-repos.md**, which describes how the generator interprets and indexes existing documentation in target repositories.
+- **`.cursor/default-context-prompt.txt`** — default workspace prompt file the extension can create or restore; **`.cursor/.dcg-prompt.txt`** — optional copy of the same instructions for agents asked to “run the DCG prompt file” (not wired in code unless you set `configPath` to it).
 
 ## Where it is in the code
 
 - **Root:** `README.md`, `PROJECT_IDEA.md` (when present).
 - **docs/context/README.md** — context index (overview, stack, areas, structure).
-- **docs/context/*.md** — one doc per area (extension, skills-e-rules, docs-tecnico).
+- **docs/context/*.md** — one doc per area (extension, skills-e-rules, technical-docs).
 
 ## Conventions and decisions
 
