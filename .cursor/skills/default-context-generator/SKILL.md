@@ -7,6 +7,8 @@ description: Runs the context generation flow for a repository: interpret existi
 
 Workflow to generate **context**, **rules**, and **skills** in the open repository so that Cursor (and humans) can understand and work on the project consistently. The extension runs **automatically** when a workspace is opened and has no context yet (configurable), to avoid unnecessary consumption for the client. The generator **adapts to the type of repository**: repos with no documentation, with documentation in varied formats (README, docs/, ADR, API docs, etc.), or already structured — in all cases it interprets whatever exists and indexes it by area of expertise to reuse as much as possible.
 
+Path boundary: write outputs only inside the opened repository, with relative paths (for example `docs/context/...`, `.cursor/rules/...`, `.cursor/skills/...`). Never write generated files to external absolute paths.
+
 ## Domain skills (reference)
 
 When analyzing and documenting, map the project to the areas below and use the corresponding skills as a guide:

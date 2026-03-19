@@ -15,6 +15,7 @@ Automation that runs **inside Cursor** (the agent runs the flow) to generate **c
 The core is **skills and rules**: Cursor analyzes the repo and writes the files in `.cursor/` and `docs/`. **No CLI is required:** the extension opens the chat and pastes the prompt for you; you send and the agent generates the context.
 
 **Extension:** "Generate context" (status bar or command palette) — opens the chat with the prompt already pasted; you send and the agent creates `docs/context/`, `.cursor/rules/`, and `.cursor/skills/` in the conversation.
+All generated outputs must stay inside the currently opened repository (workspace root), using relative paths only.
 
 ## Build order
 
@@ -46,6 +47,7 @@ defaultcontextgenerator/
 
 - **Via chat:** open a repo in Cursor and ask "generate this project's context" (with this repo's skills or the prompt below).
 - **Via extension:** **"Generate context"** in the **status bar** (bottom right) or Ctrl+Shift+P → "Default Context Generator: Generate project context". The extension opens the chat and pastes the prompt; you send and the agent generates `docs/context/`, `.cursor/rules/`, and `.cursor/skills/` in the conversation. No CLI required.
+  - Boundary: generation is limited to the current repository; do not create files in absolute external paths.
 
 ### Install and use in Cursor
 
