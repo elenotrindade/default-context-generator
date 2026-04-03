@@ -12,9 +12,9 @@ Automação que roda **dentro do Cursor** (o agente executa o fluxo) para gerar 
 - **Setup de novos projetos** — deixar o repo pronto com regras e documentação de contexto.
 - **Adentrar projetos existentes** — extrair e documentar o sistema por áreas, com base no código e nas tecnologias usadas.
 
-O núcleo são **skills e rules**: o Cursor analisa o repo e escreve os arquivos em `.cursor/` e `docs/`. Não é obrigatório ter um CLI; a lógica fica em Markdown, fácil de evoluir.
+O núcleo são **skills e rules**: o Cursor analisa o repo e escreve os arquivos em `.cursor/` e `docs/`. **Não é obrigatório ter um CLI:** a extensão abre o chat e cola o prompt; você envia e o agente gera o contexto.
 
-**Extensão:** comando "Default Context Generator: Gerar contexto do projeto" — copia o prompt para a área de transferência e tenta abrir o chat; você cola (Ctrl+V) e envia.
+**Extensão:** **"Gerar contexto"** na **status bar** (canto inferior direito) ou Ctrl+Shift+P → "Default Context Generator: Gerar contexto do projeto". A extensão abre o chat com o prompt já colado; você envia e o agente cria `docs/context/`, `.cursor/rules/` e `.cursor/skills/`. Toda geração é **manual** (nada roda sozinho ao abrir o workspace).
 
 ## Documentação da ideia
 
@@ -49,17 +49,8 @@ defaultcontextgenerator/
 
 ## Uso
 
-- **Pelo chat:** abrir um repo no Cursor e pedir "gera o contexto deste projeto" (com as skills deste repo ou o prompt abaixo).
-- **Pela extensão:** botão **"Gerar contexto"** na **status bar** (canto inferior direito) ou Ctrl+Shift+P → "Default Context Generator: Gerar contexto do projeto". O **Cursor CLI** roda em modo headless no workspace aberto e gera `docs/context/` e `.cursor/rules/` — 1 botão → ambiente pronto. (Requer [Cursor CLI](https://cursor.com/docs/cli/installation) instalado.)
-
-### Pré-requisito: Cursor CLI
-
-A extensão dispara o comando `agent -p --force` no workspace. Instale o Cursor CLI se ainda não tiver:
-
-- **Windows (PowerShell):** `irm 'https://cursor.com/install?win32=true' | iex`
-- **macOS/Linux:** `curl https://cursor.com/install -fsS | bash`
-
-Ver [Instalação do Cursor CLI](https://cursor.com/docs/cli/installation).
+- **Pelo chat:** abrir um repo no Cursor e pedir "gera o contexto deste projeto" (com as skills deste repo ou o mesmo fluxo do prompt da extensão).
+- **Pela extensão:** botão **"Gerar contexto"** na **status bar** ou Ctrl+Shift+P → "Default Context Generator: Gerar contexto do projeto". A extensão abre o chat e cola o prompt; você envia e o agente gera `docs/context/`, `.cursor/rules/` e `.cursor/skills/`. Limite: só dentro do repositório aberto; sem caminhos absolutos externos.
 
 ### Instalar e usar no seu Cursor
 
@@ -84,6 +75,6 @@ No VS Code você pode buscar **Default Context Generator** em Extensões (Ctrl+S
 
 ---
 
-Depois de instalar: abra um repositório, use **"Gerar contexto"** na status bar ou **Ctrl+Shift+P** → "Default Context Generator: Gerar contexto do projeto". A saída do agente aparece no painel **"Default Context Generator"**; ao terminar, **"Ambiente pronto!"** indica que `docs/context/` e `.cursor/rules/` foram gerados.
+Depois de instalar: abra um repositório, use **"Gerar contexto"** na status bar ou **Ctrl+Shift+P** → "Default Context Generator: Gerar contexto do projeto". O chat abre com o prompt colado; envie a mensagem e o agente gera `docs/context/`, `.cursor/rules/` e `.cursor/skills/` na conversa.
 
 Para o agente seguir o workflow completo (skills de domínio e interpretação de doc existente), copie a pasta `.cursor/skills/` (e opcionalmente `.cursor/rules/gerar-contexto.mdc`) para o repositório em que você quer gerar contexto, ou deixe este repo aberto em um multi-root workspace.
