@@ -5,13 +5,13 @@
 - [ ] **Repositório no GitHub** (se ainda não tiver): crie o repo e dê push do código. O `package.json` já tem `repository.url` apontando para o seu fork/repo.
 - [ ] **Ajustar `package.json`** (se quiser):
   - `publisher`: hoje está `"defaultcontextgenerator"`. No **VS Code Marketplace** você precisa criar um *publisher* com esse nome (ou trocar para seu usuário, ex.: `"elenotrindade"`). No **Open VSX** o publisher costuma ser seu nome de usuário.
-  - `version`: está `0.1.0`. Para cada nova publicação, suba a versão (ex.: `0.1.1`).
+  - `version`: está `0.2.0`. Para cada nova publicação, suba a versão (ex.: `0.2.1`).
 - [ ] **Compilar e gerar o .vsix** (teste local):
   ```bash
   npm install
   npm run package
   ```
-  Deve gerar `default-context-generator-0.1.0.vsix` na raiz. Teste instalando via **Extensions → ... → Install from VSIX**.
+  Deve gerar `default-context-generator-0.2.0.vsix` na raiz. Teste instalando via **Extensions → ... → Install from VSIX**.
 
 ---
 

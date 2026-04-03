@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Generate project context
 
-The extension does **not** run automatically by default. Auto-run can be enabled in settings (Default Context Generator: Run when workspace has no context). When the user asks to **generate context**, **get context**, **set up rules/skills**, or **prepare the project for Cursor** in this repository:
+Context generation is **manual** (status bar or command palette); the extension does not run it on startup. When the user asks to **generate context**, **get context**, **set up rules/skills**, or **prepare the project for Cursor** in this repository:
 
 1. **Use the skill** `default-context-generator` (in `.cursor/skills/default-context-generator/SKILL.md`).
 2. Follow the workflow described there: **interpret existing documentation** (when present) and index it by area of expertise → analyze repo → generate docs in `docs/context/` (reusing existing doc) → generate rules in `.cursor/rules/` (with skill allocation and references to the project and technologies) → optionally skills and best practices.

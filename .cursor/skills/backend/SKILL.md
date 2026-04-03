@@ -23,3 +23,4 @@ description: Guides implementation and analysis of APIs, services, business logi
 
 - Include conventions for error handling, validation and logging
 - Reference official docs (e.g. FastAPI, Express, Django) in project rules
+- For **public APIs, auth, idempotency, or concurrent requests**, also route to the **security** skill (race conditions, TOCTOU, safe error responses)

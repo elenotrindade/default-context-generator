@@ -9,8 +9,8 @@ This repository is the **Default Context Generator**: automation to generate **c
 - Provides an **orchestration skill** (`default-context-generator`) that defines the workflow: **interpret existing documentation** (when present) and index it by area of expertise → analyze repo → documentation by area (reusing existing doc) → rules with skill allocation.
 - The generator **adapts to the type of repository**: with or without documentation, in varied formats (README, docs/, ADR, API docs, etc.); it interprets whatever exists and indexes by area to reuse as much as possible.
 - Provides **domain skills** (`software-architecture`, `system-design`, `backend`, `frontend`, `ux-ui`, `devops`, `security`, `marketing`, `testing`, `data-database`, `technical-docs`, `accessibility`, `performance`) to map and document **target** projects when the user runs the generator — see **Repository analysis** below.
-- Includes a **Cursor/VS Code extension** that exposes the "Generate project context" flow (prompt + chat). The extension is **internationalized**: English (primary) and Portuguese (secondary); see [i18n.md](i18n.md) and `.cursor/rules/i18n.mdc`.
-- It is designed for use in **any repo**: the user runs the flow (chat or extension) on the target repo and gets `docs/context/` and `.cursor/rules/` generated.
+- Includes a **Cursor/VS Code extension** that exposes the "Generate project context" flow (prompt + chat) **when the user runs it** — nothing triggers automatically on startup. The extension is **internationalized**: English (primary) and Portuguese (secondary); see [i18n.md](i18n.md) and `.cursor/rules/i18n.mdc`.
+- It is designed for use in **any repo**: the user runs the flow (chat or extension) on the target repo and gets `docs/context/`, `.cursor/rules/`, and `.cursor/skills/` generated.
 
 ## Stack
 
@@ -53,7 +53,7 @@ defaultcontextgenerator/
 ├── package.json          # Extension manifest
 ├── tsconfig.json
 ├── src/
-│   ├── extension.ts      # Commands, popup, chat prompt, auto-run
+│   ├── extension.ts      # Commands, popup, chat prompt
 │   └── nls.ts            # Runtime UI strings (en/pt)
 ├── .cursor/
 │   ├── rules/            # gerar-contexto, projeto-contexto, extension-typescript, i18n, …
